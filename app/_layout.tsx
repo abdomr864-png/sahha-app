@@ -97,20 +97,12 @@ function AuthGate() {
 
   const needsOnboarding = !!session && onboarded.data === false;
 
-  // 4) Signed-in but onboarding incomplete → onboarding intro splash.
-  //    The intro is the entry point for the quiz; from there the user taps
-  //    Get Started to enter the question flow at /(onboarding)/language.
-  if (needsOnboarding && !inOnboarding) {
-    return <Redirect href="/(onboarding)/intro" />;
-  }
-
-  // 5) Signed-in onboarded user on (auth) (just logged in) → home.
-  if (session && !needsOnboarding && inAuth) {
-    return <Redirect href="/(tabs)/" />;
-  }
-
-  // 5b) Onboarded user somehow back inside (onboarding) → home. Guarantees
-  //     the quiz only ever runs once per user — they cannot re-enter it.
+  // 4) Onboarded user somehow back inside (onboarding) → home. Guarantees
+  //    the quiz only ever runs once per user — they cannot re-enter it.
+  //    Signed-in users on (auth) are NOT auto-bounced: the welcome / sign-in
+  //    pages must stay reachable (e.g. tapping "Se connecter" from welcome).
+  //    Post-authentication redirects to tabs are issued by sign-in.tsx /
+  //    sign-up.tsx / useSocialAuth callers, not here.
   if (session && !needsOnboarding && inOnboarding) {
     return <Redirect href="/(tabs)/" />;
   }

@@ -43,8 +43,7 @@ export default function SignIn() {
     const fn = provider === 'apple' ? social.signInWithApple : social.signInWithGoogle;
     const outcome = await fn();
     if (!outcome) return;
-    if (outcome.kind === 'new_user') router.replace('/(onboarding)/intro');
-    // returning users are handled by AuthGate's session redirect.
+    router.replace(outcome.kind === 'new_user' ? '/(onboarding)/intro' : '/(tabs)/');
   };
 
   const onSubmit = () => {
@@ -54,7 +53,9 @@ export default function SignIn() {
       return;
     }
     setValidationErr(null);
-    signIn.mutate(parsed.data);
+    signIn.mutate(parsed.data, {
+      onSuccess: () => router.replace('/(tabs)/'),
+    });
   };
 
   return (

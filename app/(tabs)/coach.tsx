@@ -7,11 +7,8 @@ export default function CoachTab() {
   const { t } = useTranslation();
   return (
     <Screen padded={false}>
-      <View className="px-5 pt-4">
-        <Header
-          title={t('ai.coach.title', 'AI Coach')}
-          subtitle={t('ai.coach.subtitle', 'Your strength & nutrition coach')}
-        />
+      <View className="px-5 pt-4 pb-2">
+        <Header title={t('ai.coach.title', 'AI Coach')} />
       </View>
       <ConversationList />
     </Screen>

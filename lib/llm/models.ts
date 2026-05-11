@@ -3,7 +3,10 @@
 // gpt-4o has the vision capability we need for form-check.
 
 export const MODELS = {
-  chat: 'gpt-4o-mini',
+  // Coach chat upgraded from -mini to gpt-4o for richer, more grounded advice
+  // off the user's real training/recovery context. Token caps + per-user daily
+  // limits keep the cost bounded.
+  chat: 'gpt-4o',
   programGen: 'gpt-4o-mini',
   programAdjust: 'gpt-4o-mini',
   mealParse: 'gpt-4o-mini',

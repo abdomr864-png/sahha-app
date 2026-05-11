@@ -280,3 +280,57 @@ features/<name>/
 **Decision:** `HealthKitProvider` and `HealthConnectProvider` `require()` their native packages inside try/catch. If the module isn't loaded (Expo Go, web, wrong platform), the provider returns empty arrays and `isAvailable()` returns false.
 
 **Why:** A direct `import` would break the Metro bundle in environments where the native module isn't linked. Lazy-require lets the same JS bundle ship to dev builds, Expo Go, and tests without conditional builds.
+
+## D52 — Smart streak state is server-authoritative
+
+**Decision:** All streak math (advance, freeze, miss, recovery-week, 14-day reset, weekly close) runs inside Postgres + the `resolve-streaks` edge function. The RN client only reads from `user_streaks` and `streak_events`; it never computes the streak number locally. A workout-completion trigger calls `handle_streak_workout_completed()` synchronously and the hourly `resolve-streaks` cron handles end-of-day per user timezone.
+
+**Why:** Streaks are a retention driver. A client-side counter would be trivially manipulable (toggle device date, force-quit between sets) and would diverge across devices for a single user. Pushing math to the server also gives us a single audit trail in `streak_events` for the heatmap UI and future analytics.
+
+## D53 — Recovery weeks instead of streak resets
+
+**Decision:** Missing a scheduled day burns the user's weekly freeze (one regenerates each Monday). If no freeze remains and another day is missed, `user_streaks.is_recovery_week` flips true and a `recovery_week` event is logged — but `current_streak` is preserved. The only automatic streak reset is 14 consecutive days without ANY workout; the only other reset path is an explicit user action on the detail screen.
+
+**Why:** The addendum is explicit: "the recovery week is a feature, not a punishment." Hard resets on a bad week drive churn at the exact moment we should be inviting users back. Preserving the streak with a softer visual marker keeps the dopamine intact while honestly representing the gap.
+
+## D54 — Scheduled-days default mapping is duplicated in JS and SQL
+
+**Decision:** `defaultScheduledDays(daysPerWeek)` lives in `features/streaks/lib/schedule.ts` (used by onboarding + the schedule picker UI) AND is duplicated as an inline `CASE` in the SQL `handle_streak_workout_completed` function (used when seeding a `user_streaks` row on first workout if the client hasn't created one yet). Both must be kept in step.
+
+**Why:** A single source of truth would force the trigger to call an edge function on every workout completion just to read a constant table. The mapping has 7 buckets and effectively never changes; duplication is cheaper than a network hop on the hot path. Both copies carry a comment pointing at the other.
+
+## D55 — `current_week_target` is denormalized from `profiles.training_days_per_week`
+
+**Decision:** `user_streaks.current_week_target` holds a copy of `profiles.training_days_per_week`. A `profiles` AFTER UPDATE trigger syncs it forward, but ONLY when `current_week_completions = 0` — i.e. at the start of a fresh week. Mid-week intent changes don't retroactively turn a week into a recovery week.
+
+**Why:** Without the snapshot, a user who lowers their target from 5 to 3 on Thursday after missing two sessions would have their already-failed week silently rescue itself. The snapshot keeps weekly outcomes deterministic from Monday onward; the user controls intent for *next* week via the schedule screen.
+
+## D56 — Progression: reps/sets auto-bump, weight is suggested only
+
+**Decision:** The `compute-progression` edge function runs after every workout completion. Reps and sets advance per the linear model in `program_exercises.progression_model` (target_reps_min ↔ target_reps_max ↔ +1 set). Weight bumps are written into `next_session_suggestions` and shown in an in-session card with explicit Accept/Override buttons; they are never silently applied to a future session.
+
+**Why:** Failing a rep target is cheap — the user does fewer reps and moves on. Failing a weight target on a compound is dangerous. The asymmetry of injury risk justifies the asymmetry in autonomy: the engine is allowed to be assertive about volume but conservative about load.
+
+## D57 — Two-session RPE evidence required for weight progression
+
+**Decision:** Weight progression requires (a) the current session hit every target rep AND (b) average working-set RPE ≤ 7 across BOTH the current and most-recent prior session for the same exercise. The "PR territory" prompt requires three consecutive sessions of RPE ≤ 6 and suggests double the standard increment.
+
+**Why:** A single low-RPE session is noise (warm-up worked, stim coffee, anything). Two is signal. The addendum named this gate as "AI confidence"; in practice it's not AI — it's just two observations.
+
+## D58 — Compute-progression dispatched via pg_net, not in-trigger
+
+**Decision:** The `workouts.ended_at` AFTER UPDATE trigger fans out: (1) calls `handle_streak_workout_completed` in-process (plpgsql), and (2) issues a `pg_net.http_post` to the `compute-progression` edge function. Progression math runs out-of-process because it reads sets across multiple historical workouts and writes to three tables — too much for a synchronous trigger on the hot path.
+
+**Why:** Streak update must be ACID-consistent with the workout finish (the user sees the streak tick the same second). Progression is a follow-up: the suggestion will be ready by the next session, not by the time the user closes the finish modal. Splitting the two keeps `finish` snappy and lets us iterate on progression rules without touching the trigger.
+
+## D59 — `resolve-streaks` is one hourly cron for all timezones
+
+**Decision:** A single `0 * * * *` pg_cron entry calls `resolve-streaks` every hour. The edge function iterates all `user_streaks` rows and decides per-user whether the user's local midnight has crossed in the last hour (via `Intl.DateTimeFormat` with the user's stored `timezone`). Users whose `last_resolved_date` is already today (in their tz) are short-circuited.
+
+**Why:** Per-user cron rows would scale linearly with users and pollute pg_cron. One job + idempotent per-row resolution lets us handle 10K users on the free Supabase tier and gives every user end-of-day handling within the hour they pass midnight.
+
+## D60 — Progression stays free; coach interpretation is the premium edge
+
+**Decision:** Auto-progression (reps/sets bumps, weight suggestions, PR prompts) is available to every user with no entitlement gate. The premium differentiator on the training side is the *coach persona's interpretation* of the same data in chat ("you're due for a deload — here's how to back off without losing momentum"), not the data itself.
+
+**Why:** Conflict resolution with prior freemium specs (D31). Auto-progression is what makes a beginner's first month feel coherent — paywalling it would let competing free apps eat that retention loop. The persona layer (D40) gives us a clean upgrade ramp without holding core value hostage.

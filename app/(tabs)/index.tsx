@@ -21,6 +21,7 @@ import { useWeeklyAdjustmentBanner, useHasProgram } from '@features/ai-program-a
 import { useTodayNutrition } from '@features/ai-meal-parse';
 import { useDailyTargets } from '@features/onboarding';
 import { useTodayHealth } from '@features/wearables';
+import { RecoveryWeekBanner, useStreak } from '@features/streaks';
 
 /**
  * Sahha home — Cal-AI inspired layout.
@@ -73,7 +74,8 @@ export default function Home() {
     route: '/program-gen' | '/routines' | '/meal-quick-log' | '/form-check' | '/scan' | '/ai-coach',
   ) => void requireAuth(() => router.push(route as never), aiPrompt);
 
-  const streak = 5;
+  const { data: streakRow } = useStreak();
+  const streak = streakRow?.current_streak ?? 0;
   const kcalEaten = nutrition.data?.kcalEaten ?? 0;
   const protein = nutrition.data?.protein ?? 0;
   const carbs = nutrition.data?.carbs ?? 0;
@@ -147,11 +149,20 @@ export default function Home() {
             <Text className="text-ink text-2xl font-extrabold tracking-tight">Sahha</Text>
           </Pressable>
 
-          <View className="px-3 py-1.5 rounded-full bg-bg-raised border border-border flex-row items-center">
+          <Pressable
+            onPress={() => router.push('/streaks' as never)}
+            accessibilityRole="button"
+            accessibilityLabel={t('streaks.openDetail', {
+              defaultValue: 'Open streak details',
+            })}
+            className="px-3 py-1.5 rounded-full bg-bg-raised border border-border flex-row items-center"
+          >
             <Icon name="flame" size={14} color="#F97316" />
             <Text className="text-ink text-base font-extrabold ml-1.5">{streak}</Text>
-          </View>
+          </Pressable>
         </View>
+
+        <RecoveryWeekBanner />
 
         {/* Week strip — tap to open the full activity calendar */}
         <Pressable

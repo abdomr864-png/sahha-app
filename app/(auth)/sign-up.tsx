@@ -57,8 +57,7 @@ export default function SignUp() {
     const fn = provider === 'apple' ? social.signInWithApple : social.signInWithGoogle;
     const outcome = await fn();
     if (!outcome) return;
-    if (outcome.kind === 'new_user') router.replace('/(onboarding)/intro');
-    // returning users handled by AuthGate's session redirect.
+    router.replace(outcome.kind === 'new_user' ? '/(onboarding)/intro' : '/(tabs)/');
   };
 
   const onSubmit = () => {

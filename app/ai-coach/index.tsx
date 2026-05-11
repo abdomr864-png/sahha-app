@@ -7,12 +7,8 @@ export default function AICoachIndex() {
   const { t } = useTranslation();
   return (
     <Screen padded={false}>
-      <View className="px-5 pt-4">
-        <Header
-          title={t('ai.coach.title', 'AI Coach')}
-          subtitle={t('ai.coach.subtitle', 'Your strength & nutrition coach')}
-          showBack
-        />
+      <View className="px-5 pt-4 pb-2">
+        <Header title={t('ai.coach.title', 'AI Coach')} showBack />
       </View>
       <ConversationList />
     </Screen>

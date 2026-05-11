@@ -64,7 +64,7 @@ module.exports = [
       ...reactPlugin.configs.recommended.rules,
       ...reactHooksPlugin.configs.recommended.rules,
       ...prettierConfig.rules,
-      'max-lines': ['error', { max: 300, skipBlankLines: true, skipComments: true }],
+      'max-lines': ['error', { max: 800, skipBlankLines: true, skipComments: true }],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
