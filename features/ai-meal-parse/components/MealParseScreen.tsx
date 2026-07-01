@@ -1,15 +1,18 @@
 /* eslint-disable max-lines -- Multi-step meal-parse flow; refactor tracked separately. */
 import { useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { Alert, Image, Pressable, Text, TextInput, View } from 'react-native';
 import Svg, { Circle, G } from 'react-native-svg';
 import * as ImagePicker from 'expo-image-picker';
 import * as ImageManipulator from 'expo-image-manipulator';
 import { Button, Card, Header, Icon, Screen, Spinner } from '@features/shared';
+import { MealScanOverlay } from './MealScanOverlay';
+import { MealHistory } from './MealHistory';
 import { aiClient } from '@lib/llm';
 import type { MealMacros } from '@lib/llm';
 import { AIError } from '@lib/llm/client';
-import { useEntitlement } from '@features/premium';
+import { useEntitlement, UpgradeCallout } from '@features/premium';
 import { supabase } from '@lib/supabase/client';
 
 const MEAL_BUCKET = 'meal-photos';
@@ -17,6 +20,7 @@ type Mode = 'photo' | 'text';
 
 export function MealParseScreen() {
   const { t, i18n } = useTranslation();
+  const qc = useQueryClient();
   const [mode, setMode] = useState<Mode>('photo');
   const [text, setText] = useState('');
   const [imageUri, setImageUri] = useState<string | null>(null);
@@ -184,6 +188,13 @@ export function MealParseScreen() {
         if (itemsErr) throw itemsErr;
       }
       setSavedAt(new Date());
+      // Refresh the home nutrition rings + the activity calendar so the just-logged
+      // meal shows up immediately instead of after the 60s staleTime.
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ['today-nutrition'] }),
+        qc.invalidateQueries({ queryKey: ['activity-calendar'] }),
+        qc.invalidateQueries({ queryKey: ['meal-history'] }),
+      ]);
     } catch (e) {
       Alert.alert(
         t('ai.meal.saveFailedTitle', 'Save failed'),
@@ -214,21 +225,19 @@ export function MealParseScreen() {
 
   const busy = uploading || parsing;
 
+  // The clean landing state — nothing picked, nothing analyzed. Drives both the
+  // polished hero and whether the history strip is shown.
+  const isLanding = !imageUri && !result && !busy;
+
   return (
-    <Screen scroll>
+    <Screen scroll glow>
       <Header title={t('ai.meal.title', 'AI Meal Coach')} showBack />
 
       {isBlocked ? (
-        <Card tone="raised" className="mb-4">
-          <Text className="text-ink font-semibold mb-1">
-            {ent.data?.reason === 'premium_only'
-              ? t('premium.required', 'Premium required')
-              : t('premium.dailyLimit', 'Daily limit reached')}
-          </Text>
-          <Text className="text-ink-subtle text-sm">
-            {t('ai.meal.upgradeHint', 'Upgrade to log unlimited meals with AI vision.')}
-          </Text>
-        </Card>
+        <UpgradeCallout
+          reason={ent.data?.reason}
+          hint={t('ai.meal.upgradeHint', 'Upgrade to log unlimited meals with AI vision.')}
+        />
       ) : null}
 
       {/* Mode toggle */}
@@ -252,80 +261,73 @@ export function MealParseScreen() {
           {imageUri ? (
             <View className="rounded-3xl overflow-hidden border border-border bg-bg-raised mb-3">
               <Image source={{ uri: imageUri }} style={{ width: '100%', aspectRatio: 1 }} />
-              <Pressable
-                onPress={() => {
-                  setImageUri(null);
-                  reset();
-                }}
-                className="absolute top-3 right-3 w-9 h-9 rounded-full bg-bg/80 items-center justify-center"
-              >
-                <Icon name="x" size={18} color="#F4F4F5" />
-              </Pressable>
+              {/* Scan animation rides on top of the photo while analyzing */}
+              {busy ? (
+                <MealScanOverlay uploading={uploading} />
+              ) : (
+                <Pressable
+                  onPress={() => {
+                    setImageUri(null);
+                    reset();
+                  }}
+                  className="absolute top-3 right-3 w-9 h-9 rounded-full bg-bg/80 items-center justify-center"
+                >
+                  <Icon name="x" size={18} color="#F4F4F7" />
+                </Pressable>
+              )}
             </View>
           ) : (
-            <View
-              className="rounded-3xl border-2 border-dashed border-border bg-bg-subtle items-center justify-center mb-3"
-              style={{ aspectRatio: 1.4 }}
-            >
-              <View className="w-14 h-14 rounded-2xl bg-accent/15 border border-accent/40 items-center justify-center mb-3">
-                <Icon name="camera" size={26} color="#FF4D2E" />
-              </View>
-              <Text className="text-ink font-bold text-base">
-                {t('ai.meal.snapTitle', 'Snap your meal')}
-              </Text>
-              <Text className="text-ink-subtle text-xs mt-1 px-6 text-center">
-                {t(
-                  'ai.meal.snapBody',
-                  'AI will identify foods, estimate portions, and tell you if it fits your goal.',
-                )}
-              </Text>
-            </View>
+            <SnapHero onPress={takePhoto} disabled={!!isBlocked} />
           )}
 
-          <View className="flex-row" style={{ gap: 10 }}>
-            <View className="flex-1">
-              <Button
-                label={t('ai.meal.take', 'Camera')}
-                icon="camera"
-                onPress={takePhoto}
-                disabled={busy || !!isBlocked}
-              />
-            </View>
-            <View className="flex-1">
-              <Button
-                label={t('ai.meal.upload', 'Gallery')}
-                icon="image"
-                variant="secondary"
-                onPress={pickFromLibrary}
-                disabled={busy || !!isBlocked}
-              />
-            </View>
-          </View>
-
-          {imageUri ? (
+          {/* Hide the capture controls while the scan is running */}
+          {!busy ? (
             <>
-              <View className="h-3" />
-              <View className="bg-bg-raised border border-border rounded-2xl px-4 py-3 mb-3">
-                <Text className="text-ink-muted text-[10px] font-bold mb-2 uppercase tracking-widest">
-                  {t('ai.meal.optionalNote', 'Optional note')}
-                </Text>
-                <TextInput
-                  value={text}
-                  onChangeText={setText}
-                  placeholder={t('ai.meal.notePlaceholder', 'e.g. portion was small, no oil')}
-                  placeholderTextColor="#A1A1AA"
-                  className="text-ink text-base"
-                  multiline
-                  style={{ minHeight: 44 }}
-                />
+              <View className="flex-row" style={{ gap: 10 }}>
+                <View className="flex-1">
+                  <Button
+                    label={t('ai.meal.take', 'Camera')}
+                    icon="camera"
+                    onPress={takePhoto}
+                    disabled={!!isBlocked}
+                  />
+                </View>
+                <View className="flex-1">
+                  <Button
+                    label={t('ai.meal.upload', 'Gallery')}
+                    icon="image"
+                    variant="secondary"
+                    onPress={pickFromLibrary}
+                    disabled={!!isBlocked}
+                  />
+                </View>
               </View>
-              <Button
-                label={t('ai.meal.analyze', 'Analyze with AI')}
-                icon="sparkles"
-                loading={busy}
-                disabled={busy || !!isBlocked}
-                onPress={uploadAndParse}
-              />
+
+              {imageUri ? (
+                <>
+                  <View className="h-3" />
+                  <View className="bg-bg-raised border border-border rounded-2xl px-4 py-3 mb-3">
+                    <Text className="text-ink-muted text-[10px] font-bold mb-2 uppercase tracking-widest">
+                      {t('ai.meal.optionalNote', 'Optional note')}
+                    </Text>
+                    <TextInput
+                      value={text}
+                      onChangeText={setText}
+                      placeholder={t('ai.meal.notePlaceholder', 'e.g. portion was small, no oil')}
+                      placeholderTextColor="#B4B4C2"
+                      className="text-ink text-base"
+                      multiline
+                      style={{ minHeight: 44 }}
+                    />
+                  </View>
+                  <Button
+                    label={t('ai.meal.analyze', 'Analyze with AI')}
+                    icon="sparkles"
+                    disabled={!!isBlocked}
+                    onPress={uploadAndParse}
+                  />
+                </>
+              ) : null}
             </>
           ) : null}
         </View>
@@ -339,7 +341,7 @@ export function MealParseScreen() {
                 'ai.meal.placeholder',
                 'e.g. 2 eggs, 1 banana and oatmeal with berries',
               )}
-              placeholderTextColor="#A1A1AA"
+              placeholderTextColor="#B4B4C2"
               className="text-ink text-base"
               multiline
               style={{ minHeight: 100 }}
@@ -355,20 +357,20 @@ export function MealParseScreen() {
         </View>
       )}
 
-      {busy ? (
+      {/* Photo mode runs the scan animation on the image itself; text mode shows
+          a simple spinner since there's nothing to overlay. */}
+      {busy && mode === 'text' ? (
         <View className="items-center my-6">
           <Spinner />
           <Text className="text-ink-subtle text-sm mt-3">
-            {uploading
-              ? t('ai.meal.uploading', 'Uploading photo…')
-              : t('ai.meal.analyzing', 'Analyzing nutrition…')}
+            {t('ai.meal.analyzing', 'Analyzing nutrition…')}
           </Text>
         </View>
       ) : null}
 
       {errorCode ? (
         <View className="mt-3 p-3 rounded-2xl bg-bg-raised border border-danger flex-row items-center">
-          <Icon name="alert" size={18} color="#F87171" />
+          <Icon name="alert" size={18} color="#FF4D6D" />
           <Text className="text-danger text-sm ml-2 flex-1">
             {t(`errors.ai.${errorCode}`, errorCode)}
           </Text>
@@ -384,7 +386,55 @@ export function MealParseScreen() {
           saved={!!savedAt}
         />
       ) : null}
+
+      {/* Previously snapped meals — tap one to open its detail page. */}
+      {isLanding ? <MealHistory /> : null}
     </Screen>
+  );
+}
+
+// Polished landing card shown before the user picks a photo. A glowing capture
+// target with a quick rundown of what the AI does once a meal is snapped.
+function SnapHero({ onPress, disabled }: { onPress: () => void; disabled: boolean }) {
+  const { t } = useTranslation();
+  const perks: { icon: 'search' | 'scale' | 'target'; label: string }[] = [
+    { icon: 'search', label: t('ai.meal.perkIdentify', 'Identifies every food') },
+    { icon: 'scale', label: t('ai.meal.perkPortions', 'Estimates portions') },
+    { icon: 'target', label: t('ai.meal.perkGoal', 'Scores it against your goal') },
+  ];
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={disabled}
+      className="rounded-3xl border border-accent/30 bg-bg-subtle overflow-hidden mb-3 active:opacity-90"
+    >
+      {/* Capture target */}
+      <View className="items-center pt-8 pb-6 px-6">
+        <View className="w-24 h-24 rounded-3xl bg-accent/10 border border-accent/40 items-center justify-center">
+          <View className="w-16 h-16 rounded-2xl bg-accent/20 border border-accent/50 items-center justify-center">
+            <Icon name="camera" size={30} color="#FF4D2E" />
+          </View>
+        </View>
+        <Text className="text-ink font-extrabold text-xl mt-4">
+          {t('ai.meal.snapTitle', 'Snap your meal')}
+        </Text>
+        <Text className="text-ink-subtle text-sm mt-1.5 text-center leading-5">
+          {t('ai.meal.snapBody2', 'Point your camera at any plate and let AI break it down.')}
+        </Text>
+      </View>
+
+      {/* Perk rundown */}
+      <View className="border-t border-border bg-bg-raised/60 px-5 py-4" style={{ gap: 12 }}>
+        {perks.map((p) => (
+          <View key={p.icon} className="flex-row items-center">
+            <View className="w-8 h-8 rounded-xl bg-bg-elevated border border-border items-center justify-center">
+              <Icon name={p.icon} size={15} color="#FF4D2E" />
+            </View>
+            <Text className="text-ink text-sm font-semibold ml-3">{p.label}</Text>
+          </View>
+        ))}
+      </View>
+    </Pressable>
   );
 }
 
@@ -406,7 +456,7 @@ function ModeTab({
         active ? 'bg-bg-raised border border-border' : ''
       }`}
     >
-      <Icon name={icon} size={16} color={active ? '#FF4D2E' : '#A1A1AA'} />
+      <Icon name={icon} size={16} color={active ? '#FF4D2E' : '#B4B4C2'} />
       <Text className={`ml-2 text-sm font-bold ${active ? 'text-ink' : 'text-ink-subtle'}`}>
         {label}
       </Text>
@@ -518,9 +568,9 @@ function ResultView({
       {/* Detailed macro tiles */}
       <View className="flex-row mt-4 mb-2" style={{ gap: 8 }}>
         <MacroTile label="kcal" value={Math.round(result.total.calories)} accent />
-        <MacroTile label="P" value={`${Math.round(result.total.protein_g)}g`} color="#34D399" />
+        <MacroTile label="P" value={`${Math.round(result.total.protein_g)}g`} color="#2EE6A6" />
         <MacroTile label="C" value={`${Math.round(result.total.carbs_g)}g`} color="#60A5FA" />
-        <MacroTile label="F" value={`${Math.round(result.total.fat_g)}g`} color="#FBBF24" />
+        <MacroTile label="F" value={`${Math.round(result.total.fat_g)}g`} color="#F5C451" />
       </View>
 
       {(result.total.fiber_g != null ||
@@ -555,7 +605,7 @@ function ResultView({
       {result.notes && result.notes.length > 0 ? (
         <Card className="mb-3">
           <View className="flex-row items-center mb-2">
-            <Icon name="check-circle" size={16} color="#34D399" />
+            <Icon name="check-circle" size={16} color="#2EE6A6" />
             <Text className="text-emerald-300 font-bold ml-2">
               {t('ai.meal.whyItWorks', 'Why this works')}
             </Text>
@@ -572,7 +622,7 @@ function ResultView({
       {result.warnings && result.warnings.length > 0 ? (
         <Card className="mb-3" tone="raised">
           <View className="flex-row items-center mb-2">
-            <Icon name="alert" size={16} color="#FBBF24" />
+            <Icon name="alert" size={16} color="#F5C451" />
             <Text className="text-amber-300 font-bold ml-2">
               {t('ai.meal.watchOut', 'Watch out')}
             </Text>
@@ -618,7 +668,7 @@ function ResultView({
             <View className="flex-row mb-3" style={{ gap: 6 }}>
               {item.cooking_method && item.cooking_method !== 'unknown' ? (
                 <View className="bg-bg-subtle border border-border rounded-full px-2.5 py-1 flex-row items-center">
-                  <Icon name={cookingIcon(item.cooking_method)} size={11} color="#A1A1AA" />
+                  <Icon name={cookingIcon(item.cooking_method)} size={11} color="#B4B4C2" />
                   <Text className="text-ink-subtle text-[10px] font-bold uppercase ml-1">
                     {item.cooking_method.replace('_', ' ')}
                   </Text>
@@ -690,7 +740,7 @@ function MacroTile({
     >
       <Text
         className="text-[10px] font-bold tracking-widest"
-        style={{ color: color ?? (accent ? '#FF4D2E' : '#A1A1AA') }}
+        style={{ color: color ?? (accent ? '#FF4D2E' : '#B4B4C2') }}
       >
         {label.toUpperCase()}
       </Text>
@@ -710,7 +760,7 @@ function MicroTile({
 }) {
   return (
     <View className="flex-1 bg-bg-subtle border border-border rounded-2xl p-3 flex-row items-center">
-      <Icon name={icon} size={16} color="#A1A1AA" />
+      <Icon name={icon} size={16} color="#B4B4C2" />
       <View className="ml-2">
         <Text className="text-ink-muted text-[10px] font-bold uppercase">{label}</Text>
         <Text className="text-ink text-sm font-bold">{value}</Text>
@@ -761,9 +811,9 @@ function MacroRing({ total }: { total: MealMacros['total'] }) {
   // Build dasharray segments (length, gap, length, gap…) so each color paints
   // its slice of the circumference. Each segment starts at the previous offset.
   const segments = [
-    { color: '#34D399', frac: proteinPct, label: 'P', grams: total.protein_g },
+    { color: '#2EE6A6', frac: proteinPct, label: 'P', grams: total.protein_g },
     { color: '#60A5FA', frac: carbsPct, label: 'C', grams: total.carbs_g },
-    { color: '#FBBF24', frac: fatPct, label: 'F', grams: total.fat_g },
+    { color: '#F5C451', frac: fatPct, label: 'F', grams: total.fat_g },
   ];
 
   let offset = 0;

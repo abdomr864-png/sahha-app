@@ -1,7 +1,16 @@
-import { useEffect } from 'react';
-import { ActivityIndicator, FlatList, Pressable, RefreshControl, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  RefreshControl,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Icon, Screen } from '@features/shared';
 import { PostCard, useCommunityStore } from '@features/community';
 import { useRequireAuth, useSession } from '@features/auth';
@@ -21,6 +30,16 @@ export default function Feed() {
   const toggleLike = useCommunityStore((s) => s.toggleLike);
   const toggleSave = useCommunityStore((s) => s.toggleSave);
   const requireAuth = useRequireAuth();
+
+  // Visual filter tabs (Sahha design). Selection is cosmetic until the feed
+  // backend supports server-side filtering.
+  const [activeFilter, setActiveFilter] = useState(0);
+  const filters = [
+    t('feed.filterForYou', { defaultValue: 'For you' }),
+    t('feed.filterFollowing', { defaultValue: 'Following' }),
+    t('feed.filterPRs', { defaultValue: 'PRs' }),
+    t('feed.filterNutrition', { defaultValue: 'Nutrition' }),
+  ];
 
   useEffect(() => {
     if (userId) void load(userId);
@@ -71,6 +90,36 @@ export default function Feed() {
         </Pressable>
       </View>
 
+      {/* Filter chips — Sahha design */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{ flexGrow: 0, flexShrink: 0 }}
+        contentContainerStyle={{
+          paddingHorizontal: 20,
+          gap: 8,
+          paddingBottom: 14,
+          alignItems: 'center',
+        }}
+      >
+        {filters.map((label, i) => {
+          const active = activeFilter === i;
+          return (
+            <Pressable
+              key={label}
+              onPress={() => setActiveFilter(i)}
+              className={`px-4 py-2 rounded-full border ${
+                active ? 'bg-ink border-ink' : 'bg-bg-elevated border-border'
+              }`}
+            >
+              <Text className={`text-sm font-semibold ${active ? 'text-bg' : 'text-ink-subtle'}`}>
+                {label}
+              </Text>
+            </Pressable>
+          );
+        })}
+      </ScrollView>
+
       <FlatList
         data={posts}
         keyExtractor={(p) => p.id}
@@ -117,7 +166,7 @@ export default function Feed() {
 
       <Pressable
         onPress={onCreate}
-        className="absolute bottom-28 right-5 w-14 h-14 rounded-full bg-accent items-center justify-center"
+        className="absolute bottom-28 right-5 w-14 h-14 rounded-full overflow-hidden items-center justify-center"
         style={{
           shadowColor: '#FF4D2E',
           shadowOpacity: 0.5,
@@ -126,6 +175,14 @@ export default function Feed() {
           elevation: 8,
         }}
       >
+        <LinearGradient
+          colors={
+            ['#FF8A2B', '#FF4D2E', '#FF2D55'] as unknown as readonly [string, string, ...string[]]
+          }
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        />
         <Icon name="plus" size={26} color="#FFFFFF" />
       </Pressable>
     </Screen>

@@ -20,7 +20,7 @@ function BackIcon() {
     <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
       <Path
         d="M15 6l-6 6 6 6"
-        stroke="#F4F4F5"
+        stroke="#F4F4F7"
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -51,7 +51,7 @@ export default function SignUp() {
   const [validationErr, setValidationErr] = useState<string | null>(null);
 
   const strength = useMemo(() => scorePassword(password), [password]);
-  const barColors = ['#27272F', '#F87171', '#FBBF24', '#34D399', '#34D399'];
+  const barColors = ['#21212B', '#FF4D6D', '#F5C451', '#2EE6A6', '#2EE6A6'];
 
   const onSocial = async (provider: 'apple' | 'google') => {
     const fn = provider === 'apple' ? social.signInWithApple : social.signInWithGoogle;
@@ -68,7 +68,17 @@ export default function SignUp() {
     }
     setValidationErr(null);
     signUp.mutate(parsed.data, {
-      onSuccess: () => router.replace('/(onboarding)/intro'),
+      onSuccess: (session) => {
+        // Confirmation off → a session is issued immediately, so drop the new
+        // user straight into the personalization quiz. Confirmation on → no
+        // session yet; send them to confirm their email, then sign-in resumes
+        // the quiz (a profile can only be written once they're authenticated).
+        if (session) {
+          router.replace('/(onboarding)/intro');
+        } else {
+          router.replace({ pathname: '/(auth)/check-email', params: { email } });
+        }
+      },
     });
   };
 
@@ -154,7 +164,7 @@ export default function SignUp() {
                     flex: 1,
                     height: 4,
                     borderRadius: 4,
-                    backgroundColor: strength.score >= i ? barColors[strength.score] : '#27272F',
+                    backgroundColor: strength.score >= i ? barColors[strength.score] : '#21212B',
                   }}
                 />
               ))}

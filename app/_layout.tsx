@@ -7,10 +7,17 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import * as NavigationBar from 'expo-navigation-bar';
+import { useFonts } from 'expo-font';
+import { SpaceGrotesk_600SemiBold, SpaceGrotesk_700Bold } from '@expo-google-fonts/space-grotesk';
+import { HankenGrotesk_500Medium, HankenGrotesk_700Bold } from '@expo-google-fonts/hanken-grotesk';
 import { initI18n } from '@lib/i18n';
 import { supabase } from '@lib/supabase/client';
 import { AuthGateSheet, useSession } from '@features/auth';
-import { useOnboardingStore } from '@features/onboarding';
+import { useOnboardingStore, usePrefetchProfile } from '@features/onboarding';
+// Direct module import (not the @features/strength barrel) keeps the strength
+// screen graph out of the app entry route; the overlay only needs the store.
+import { LevelUpCelebration } from '@features/strength/components/LevelUpCelebration';
+import { useWatchBridge } from '@features/watch';
 
 // Force-route to "/" (which redirects to home) on every cold launch.
 // Prevents the brief flash of the previously-open tab.
@@ -25,6 +32,15 @@ const queryClient = new QueryClient({
 });
 
 export default function RootLayout() {
+  // Load the Sahha display + body fonts. Rendering is intentionally NOT gated
+  // on this: text falls back to System until the fonts resolve, then swaps in.
+  useFonts({
+    SpaceGrotesk_600SemiBold,
+    SpaceGrotesk_700Bold,
+    HankenGrotesk_500Medium,
+    HankenGrotesk_700Bold,
+  });
+
   useEffect(() => {
     if (Platform.OS !== 'android') return;
     NavigationBar.setVisibilityAsync('hidden').catch(() => undefined);
@@ -32,16 +48,27 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#0B0B0F' }}>
-      <SafeAreaProvider style={{ flex: 1, backgroundColor: '#0B0B0F' }}>
+    <GestureHandlerRootView style={{ flex: 1, backgroundColor: '#0A0A0F' }}>
+      <SafeAreaProvider style={{ flex: 1, backgroundColor: '#0A0A0F' }}>
         <QueryClientProvider client={queryClient}>
           <AuthGate />
           <AuthGateSheet />
+          <LevelUpCelebration />
+          <WatchBridgeMount />
           <StatusBar hidden />
         </QueryClientProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );
+}
+
+/**
+ * Mounts the phone↔watch bridge once for the app's lifetime. Renders nothing.
+ * No-ops on platforms/builds without the native WatchConnectivity module.
+ */
+function WatchBridgeMount() {
+  useWatchBridge();
+  return null;
 }
 
 function AuthGate() {
@@ -60,6 +87,9 @@ function AuthGate() {
   useEffect(() => {
     ensureOwner(userId ?? null);
   }, [ensureOwner, userId]);
+  // Warm the profile cache so the Profile tab renders with data on first open
+  // instead of flashing placeholders while the query resolves.
+  usePrefetchProfile(userId ?? null);
   // `goal` is null until the user finishes onboarding (useCompleteOnboarding
   // upserts it). Treat null/missing as "needs onboarding".
   const onboarded = useQuery({
@@ -78,7 +108,7 @@ function AuthGate() {
 
   // 1) Session not yet resolved → blank splash. No previous route renders.
   if (session === undefined) {
-    return <View style={{ flex: 1, backgroundColor: '#0B0B0F' }} />;
+    return <View style={{ flex: 1, backgroundColor: '#0A0A0F' }} />;
   }
 
   // 2) Signed-out users can browse the app freely. The (auth) routes are
@@ -92,7 +122,7 @@ function AuthGate() {
   // 3) Signed-in but onboarding status unknown → splash. Avoids a flash of
   //    tabs before we route a brand-new user into onboarding.
   if (session && (onboarded.isPending || onboarded.fetchStatus === 'fetching')) {
-    return <View style={{ flex: 1, backgroundColor: '#0B0B0F' }} />;
+    return <View style={{ flex: 1, backgroundColor: '#0A0A0F' }} />;
   }
 
   const needsOnboarding = !!session && onboarded.data === false;
@@ -119,6 +149,6 @@ function AuthGate() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#0B0B0F' } }} />
+    <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: '#0A0A0F' } }} />
   );
 }

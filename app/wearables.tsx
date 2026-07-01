@@ -147,7 +147,7 @@ export default function WearablesSettings() {
 
         <Pressable onPress={onDisconnect} className="mt-2 mb-12 self-start">
           <View className="flex-row items-center px-4 py-3 border border-danger/40 rounded-2xl">
-            <Icon name="trash" color="#F87171" />
+            <Icon name="trash" color="#FF4D6D" />
             <Text className="text-danger ml-2 font-semibold">
               {disconnecting ? t('common.loading') : t('wearables.settings.disconnect')}
             </Text>

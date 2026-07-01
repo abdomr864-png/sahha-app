@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, Link } from 'react-router-dom';
 import type { LucideIcon } from 'lucide-react';
 import {
   LayoutDashboard,
@@ -9,29 +9,19 @@ import {
   Activity,
   TrendingUp,
   Image as ImageIcon,
-  Apple,
-  Droplets,
-  Pill,
-  Smile,
-  Moon,
-  Watch,
   UserPlus,
   Newspaper,
-  Heart,
-  MessageSquare,
   Trophy,
   MessagesSquare,
-  Bot,
   Video,
   Wand2,
   CreditCard,
+  Gift,
   Gauge,
   Settings,
   Flame,
-  CalendarCheck,
   History,
   Sparkles,
-  Layers,
   LogOut,
   ChevronDown,
 } from 'lucide-react';
@@ -62,11 +52,7 @@ const sections: NavSection[] = [
     items: [
       { to: '/r/exercises', label: 'Exercises', icon: Dumbbell },
       { to: '/r/programs', label: 'Programs', icon: ClipboardList },
-      { to: '/r/program_days', label: 'Program Days', icon: Layers },
-      { to: '/r/program_exercises', label: 'Program Exercises', icon: Layers },
       { to: '/r/workouts', label: 'Workouts', icon: Activity },
-      { to: '/r/workout_exercises', label: 'Workout Exercises', icon: Layers },
-      { to: '/r/workout_sets', label: 'Workout Sets', icon: Layers },
     ],
   },
   {
@@ -78,31 +64,10 @@ const sections: NavSection[] = [
     ],
   },
   {
-    label: 'Nutrition',
-    items: [
-      { to: '/r/foods', label: 'Foods', icon: Apple },
-      { to: '/r/meals', label: 'Meals', icon: Apple },
-      { to: '/r/meal_items', label: 'Meal Items', icon: Apple },
-      { to: '/r/water_log', label: 'Water Log', icon: Droplets },
-      { to: '/r/supplements', label: 'Supplements', icon: Pill },
-      { to: '/r/supplement_logs', label: 'Supplement Logs', icon: Pill },
-    ],
-  },
-  {
-    label: 'Wellness',
-    items: [
-      { to: '/r/mood_log', label: 'Mood Log', icon: Smile },
-      { to: '/r/sleep_log', label: 'Sleep Log', icon: Moon },
-      { to: '/r/wearable_metrics', label: 'Wearable Metrics', icon: Watch },
-    ],
-  },
-  {
     label: 'Social',
     items: [
       { to: '/r/follows', label: 'Follows', icon: UserPlus },
       { to: '/r/posts', label: 'Posts', icon: Newspaper },
-      { to: '/r/post_likes', label: 'Likes', icon: Heart },
-      { to: '/r/post_comments', label: 'Comments', icon: MessageSquare },
       { to: '/r/leaderboards_weekly', label: 'Leaderboards', icon: Trophy },
     ],
   },
@@ -110,7 +75,6 @@ const sections: NavSection[] = [
     label: 'AI',
     items: [
       { to: '/r/ai_conversations', label: 'AI Conversations', icon: MessagesSquare },
-      { to: '/r/ai_messages', label: 'AI Messages', icon: Bot },
       { to: '/r/ai_form_checks', label: 'Form Checks', icon: Video },
       { to: '/r/ai_program_adjustments', label: 'Program Adjustments', icon: Wand2 },
     ],
@@ -119,7 +83,6 @@ const sections: NavSection[] = [
     label: 'Streaks & Progression',
     items: [
       { to: '/r/user_streaks', label: 'User Streaks', icon: Flame },
-      { to: '/r/streak_events', label: 'Streak Events', icon: CalendarCheck },
       { to: '/r/exercise_progression_log', label: 'Progression Log', icon: History },
       { to: '/r/next_session_suggestions', label: 'Next Session Suggestions', icon: Sparkles },
     ],
@@ -127,6 +90,7 @@ const sections: NavSection[] = [
   {
     label: 'Billing',
     items: [
+      { to: '/subscriptions', label: 'Manage Plans', icon: Gift },
       { to: '/r/subscriptions', label: 'Subscriptions', icon: CreditCard },
       { to: '/r/usage_counters', label: 'Usage Counters', icon: Gauge },
       { to: '/r/entitlement_rules', label: 'Entitlement Rules', icon: Settings },
@@ -142,8 +106,11 @@ export default function AdminLayout() {
   return (
     <div className="flex h-screen overflow-hidden">
       <aside className="flex w-64 flex-col border-r border-border/60 bg-card/40 backdrop-blur">
-        {/* Brand */}
-        <div className="flex items-center gap-2.5 px-4 py-4">
+        {/* Brand — links back to the public presentation site */}
+        <Link
+          to="/"
+          className="flex items-center gap-2.5 px-4 py-4 transition-opacity hover:opacity-80"
+        >
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary text-primary-foreground shadow-glow-primary">
             <Activity size={18} strokeWidth={2.5} />
           </div>
@@ -153,7 +120,7 @@ export default function AdminLayout() {
               Admin
             </div>
           </div>
-        </div>
+        </Link>
 
         <div className="mx-3 mb-2 h-px bg-border/60" />
 
@@ -182,7 +149,7 @@ export default function AdminLayout() {
                     {section.items.map((item) => (
                       <NavLink
                         key={item.to}
-                        to={item.to}
+                        to={item.to === '/' ? '/admin' : `/admin${item.to}`}
                         end={item.to === '/'}
                         className={({ isActive }) =>
                           cn(

@@ -113,7 +113,7 @@ export default function PostDetail() {
         right={
           isOwner ? (
             <Pressable onPress={removePost} hitSlop={10}>
-              <Icon name="trash" size={20} color="#F87171" />
+              <Icon name="trash" size={20} color="#FF4D6D" />
             </Pressable>
           ) : null
         }
@@ -154,7 +154,7 @@ export default function PostDetail() {
                   <Icon
                     name="heart"
                     size={22}
-                    color={post.liked_by_me ? '#FF4D2E' : '#F4F4F5'}
+                    color={post.liked_by_me ? '#FF4D2E' : '#F4F4F7'}
                     filled={post.liked_by_me}
                   />
                   <Text className="text-ink ml-1.5 font-semibold">{post.like_count}</Text>
@@ -168,7 +168,7 @@ export default function PostDetail() {
                   <Icon
                     name="bookmark"
                     size={22}
-                    color={post.saved_by_me ? '#FACC15' : '#F4F4F5'}
+                    color={post.saved_by_me ? '#FACC15' : '#F4F4F7'}
                     filled={post.saved_by_me}
                   />
                 </Pressable>
@@ -205,7 +205,7 @@ export default function PostDetail() {
             value={text}
             onChangeText={setText}
             placeholder={t('post.commentPlaceholder')}
-            placeholderTextColor="#A1A1AA"
+            placeholderTextColor="#B4B4C2"
             className="flex-1 text-ink bg-bg-raised border border-border rounded-2xl px-4 py-3"
             maxLength={1000}
           />
@@ -216,7 +216,7 @@ export default function PostDetail() {
               text.trim().length === 0 ? 'bg-bg-raised border border-border' : 'bg-accent'
             }`}
           >
-            <Icon name="send" size={18} color={text.trim().length === 0 ? '#A1A1AA' : '#FFFFFF'} />
+            <Icon name="send" size={18} color={text.trim().length === 0 ? '#B4B4C2' : '#FFFFFF'} />
           </Pressable>
         </View>
       </KeyboardAvoidingView>

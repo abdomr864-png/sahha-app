@@ -1,10 +1,12 @@
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './auth/ProtectedRoute';
 import AdminLayout from './components/layout/AdminLayout';
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Users from './pages/Users';
 import UserDetail from './pages/UserDetail';
+import Subscriptions from './pages/Subscriptions';
 import ResourcePage from './pages/Resource';
 import { isConfigured } from './lib/supabase';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './components/ui/card';
@@ -40,8 +42,10 @@ VITE_SUPABASE_ANON_KEY=eyJ...`}
 
   return (
     <Routes>
+      <Route path="/" element={<Landing />} />
       <Route path="/login" element={<Login />} />
       <Route
+        path="/admin"
         element={
           <ProtectedRoute>
             <AdminLayout />
@@ -51,6 +55,7 @@ VITE_SUPABASE_ANON_KEY=eyJ...`}
         <Route index element={<Dashboard />} />
         <Route path="users" element={<Users />} />
         <Route path="users/:id" element={<UserDetail />} />
+        <Route path="subscriptions" element={<Subscriptions />} />
         <Route path="r/:slug" element={<ResourcePage />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />

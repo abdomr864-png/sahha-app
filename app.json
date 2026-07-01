@@ -4,6 +4,7 @@
     "slug": "sahha",
     "scheme": "sahha",
     "version": "0.1.0",
+    "icon": "./assets/images/icon.png",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#0B0B0F",
@@ -19,6 +20,7 @@
       "backgroundColor": "#0B0B0F"
     },
     "splash": {
+      "image": "./assets/images/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#0B0B0F"
     },
@@ -27,7 +29,8 @@
       "bundleIdentifier": "com.sahha.app",
       "usesAppleSignIn": true,
       "infoPlist": {
-        "NSHealthShareUsageDescription": "Sahha reads your steps, heart rate, sleep, and workouts to personalize training and track progress.",
+        "NSHealthShareUsageDescription": "Sahha lit vos pas, fréquence cardiaque, sommeil et entraînements pour personnaliser votre coaching et suivre vos progrès.",
+        "NSHealthUpdateUsageDescription": "Sahha peut enregistrer vos entraînements et votre poids dans l'app Santé.",
         "NSCameraUsageDescription": "Sahha uses the camera for progress photos and form-check videos.",
         "NSPhotoLibraryUsageDescription": "Sahha attaches progress photos from your library.",
         "NSMicrophoneUsageDescription": "Sahha records audio with your form-check videos."
@@ -35,14 +38,17 @@
       "entitlements": {
         "com.apple.developer.healthkit": true,
         "com.apple.developer.healthkit.access": [],
-        "com.apple.developer.applesignin": ["Default"]
+        "com.apple.developer.applesignin": [
+          "Default"
+        ]
       }
     },
     "android": {
       "package": "com.sahha.app",
       "backgroundColor": "#0B0B0F",
       "adaptiveIcon": {
-        "backgroundColor": "#0B0B0F"
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#10505A"
       },
       "permissions": [
         "android.permission.ACTIVITY_RECOGNITION",
@@ -59,12 +65,17 @@
         "android.permission.health.READ_EXERCISE",
         "android.permission.health.READ_WEIGHT",
         "android.permission.health.READ_BODY_FAT",
-        "android.permission.health.READ_HEART_RATE_VARIABILITY"
+        "android.permission.health.READ_HEART_RATE_VARIABILITY",
+        "android.permission.health.READ_DISTANCE",
+        "android.permission.health.READ_HEALTH_DATA_IN_BACKGROUND",
+        "android.permission.RECEIVE_BOOT_COMPLETED",
+        "android.permission.WAKE_LOCK"
       ]
     },
     "web": {
       "bundler": "metro",
-      "output": "single"
+      "output": "single",
+      "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
       "expo-router",
@@ -88,12 +99,17 @@
       [
         "@kingstinct/react-native-healthkit",
         {
-          "NSHealthShareUsageDescription": "Sahha reads your steps, heart rate, sleep, and workouts to personalize training and track progress.",
+          "NSHealthShareUsageDescription": "Sahha lit vos pas, fréquence cardiaque, sommeil et entraînements pour personnaliser votre coaching et suivre vos progrès.",
           "background": true
         }
       ],
       "react-native-health-connect",
-      "expo-background-fetch"
+      "./plugins/withHealthConnect",
+      "./plugins/withSpotify",
+      "./plugins/withAppleWatch",
+      "expo-web-browser",
+      "expo-background-fetch",
+      "expo-font"
     ],
     "experiments": {
       "typedRoutes": true
@@ -103,7 +119,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": ""
+        "projectId": "3b340632-9702-4b5b-b0b8-3339c12bb38c"
       }
     }
   }

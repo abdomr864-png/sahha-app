@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -106,9 +105,9 @@ export default function OnboardingIntro() {
   };
 
   return (
-    <SafeAreaView edges={['top', 'left', 'right']} style={{ flex: 1, backgroundColor: '#0B0B0F' }}>
+    <SafeAreaView edges={['top', 'left', 'right']} style={{ flex: 1, backgroundColor: '#0A0A0F' }}>
       <Glow color="#FF4D2E" size={380} opacity={0.22} top={-120} right={-100} />
-      <Glow color="#7C3AED" size={320} opacity={0.14} bottom={-100} left={-100} />
+      <Glow color="#A855F7" size={320} opacity={0.14} bottom={-100} left={-100} />
 
       <View style={{ flex: 1, paddingHorizontal: 24 }}>
         <Animated.View
@@ -147,7 +146,7 @@ export default function OnboardingIntro() {
               }}
             >
               <LinearGradient
-                colors={['#FF7A4D', '#FF4D2E', '#D6321A']}
+                colors={['#FF8A2B', '#FF4D2E', '#D6321A']}
                 start={{ x: 0.2, y: 0 }}
                 end={{ x: 0.8, y: 1 }}
                 style={{
@@ -236,9 +235,9 @@ export default function OnboardingIntro() {
             style={{ marginTop: 20, gap: 18 }}
           >
             <Stat label="QUESTIONS" value="9" />
-            <View style={{ width: 1, height: 18, backgroundColor: '#27272F' }} />
+            <View style={{ width: 1, height: 18, backgroundColor: '#21212B' }} />
             <Stat label="MINUTES" value="~2" />
-            <View style={{ width: 1, height: 18, backgroundColor: '#27272F' }} />
+            <View style={{ width: 1, height: 18, backgroundColor: '#21212B' }} />
             <Stat label="POWERED BY" value="AI" />
           </Animated.View>
         </View>

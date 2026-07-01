@@ -58,7 +58,7 @@ export function DateInput({ label, value, onChange }: Props) {
         style={{ height: 56 }}
       >
         <View className="mr-3">
-          <Icon name="calendar" size={18} color="#A1A1AA" strokeWidth={2.2} />
+          <Icon name="calendar" size={18} color="#B4B4C2" strokeWidth={2.2} />
         </View>
 
         <Segment
@@ -166,7 +166,7 @@ function Segment({
       onSubmitEditing={onSubmitEditing}
       style={{
         width,
-        color: '#F4F4F5',
+        color: '#F4F4F7',
         fontSize: 18,
         fontWeight: '700',
         textAlign: 'center',

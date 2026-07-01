@@ -4,12 +4,12 @@
 
 @layer base {
   :root {
-    /* Light mode — clean neutral grays + emerald accent */
+    /* Light mode — neutral grays + Sahha flame accent (#FF4D2E) */
     --background: 0 0% 100%;
     --foreground: 222 47% 11%;
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
-    --primary: 158 64% 42%;
+    --primary: 9 100% 59%;
     --primary-foreground: 0 0% 100%;
     --secondary: 220 14% 96%;
     --secondary-foreground: 222 47% 11%;
@@ -21,29 +21,30 @@
     --destructive-foreground: 0 0% 98%;
     --border: 220 13% 91%;
     --input: 220 13% 91%;
-    --ring: 158 64% 42%;
+    --ring: 9 100% 59%;
     --radius: 0.6rem;
   }
 
   .dark {
-    /* Dark mode — deep slate with subtle blue tint, emerald accent */
-    --background: 224 30% 5%;
-    --foreground: 210 20% 98%;
-    --card: 224 27% 8%;
-    --card-foreground: 210 20% 98%;
-    --primary: 158 70% 50%;
-    --primary-foreground: 158 80% 8%;
-    --secondary: 222 19% 13%;
-    --secondary-foreground: 210 20% 98%;
-    --muted: 222 19% 13%;
-    --muted-foreground: 217 15% 65%;
-    --accent: 222 19% 16%;
-    --accent-foreground: 210 20% 98%;
-    --destructive: 0 75% 55%;
-    --destructive-foreground: 210 20% 98%;
-    --border: 222 19% 16%;
-    --input: 222 19% 16%;
-    --ring: 158 70% 50%;
+    /* Dark mode — matches the Sahha mobile app: near-black violet-tinted
+       surfaces (#0A0A0F / #14141C / #1B1B25 / #21212B) + flame accent. */
+    --background: 240 20% 5%;
+    --foreground: 240 16% 96%;
+    --card: 240 17% 9%;
+    --card-foreground: 240 16% 96%;
+    --primary: 9 100% 59%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 240 16% 13%;
+    --secondary-foreground: 240 16% 96%;
+    --muted: 240 15% 16%;
+    --muted-foreground: 240 12% 73%;
+    --accent: 240 15% 16%;
+    --accent-foreground: 240 16% 96%;
+    --destructive: 349 100% 65%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 240 13% 15%;
+    --input: 240 13% 15%;
+    --ring: 9 100% 59%;
   }
 
   * {
@@ -72,8 +73,8 @@
     pointer-events: none;
     z-index: -1;
     background:
-      radial-gradient(circle at 12% 10%, hsl(158 70% 50% / 0.08), transparent 40%),
-      radial-gradient(circle at 88% 90%, hsl(217 91% 60% / 0.06), transparent 45%);
+      radial-gradient(circle at 12% 10%, hsl(9 100% 59% / 0.09), transparent 40%),
+      radial-gradient(circle at 88% 90%, hsl(349 100% 65% / 0.06), transparent 45%);
   }
 
   /* Slim, classy scrollbars */
@@ -104,6 +105,21 @@
 }
 
 @layer utilities {
+  /* In-phone scroll areas: scrollable but no visible scrollbar (like a device). */
+  .hide-scroll {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .hide-scroll::-webkit-scrollbar {
+    display: none;
+  }
+  .font-display {
+    font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  }
+  .font-sahha {
+    font-family: 'Hanken Grotesk', 'Inter', system-ui, sans-serif;
+  }
+
   .glass {
     background: linear-gradient(
       180deg,

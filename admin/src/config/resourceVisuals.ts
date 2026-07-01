@@ -47,12 +47,13 @@ export const accentClasses: Record<
   Accent,
   { bg: string; text: string; ring: string; glow: string; gradient: string }
 > = {
+  // Sahha flame accent (#FF4D2E) — the app's primary brand color.
   emerald: {
-    bg: 'bg-emerald-500/15',
-    text: 'text-emerald-400',
-    ring: 'ring-emerald-500/30',
-    glow: 'shadow-[0_0_24px_-6px_rgba(16,185,129,0.5)]',
-    gradient: 'from-emerald-500/20 via-emerald-500/5 to-transparent',
+    bg: 'bg-orange-500/15',
+    text: 'text-orange-400',
+    ring: 'ring-orange-500/30',
+    glow: 'shadow-[0_0_24px_-6px_rgba(255,77,46,0.55)]',
+    gradient: 'from-orange-500/20 via-orange-500/5 to-transparent',
   },
   blue: {
     bg: 'bg-blue-500/15',
@@ -203,6 +204,11 @@ export const resourceVisuals: Record<string, ResourceVisual> = {
     icon: Settings,
     accent: 'indigo',
     blurb: 'Remote config of free vs premium limits',
+  },
+  plans: {
+    icon: CreditCard,
+    accent: 'emerald',
+    blurb: 'Pricing tiers, copy, and per-feature limits',
   },
 };
 

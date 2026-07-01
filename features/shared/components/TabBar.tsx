@@ -13,8 +13,15 @@ const ICONS: Record<string, IconName> = {
   train: 'dumbbell',
 };
 
+// Routes where the bottom tab bar should be fully hidden. The AI Coach tab is
+// a full-bleed chat surface: the keyboard composer needs the screen edge, and
+// the tab buttons would otherwise overlap it.
+const HIDDEN_ROUTES = new Set(['coach']);
+
 export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
   const insets = useSafeAreaInsets();
+  const currentRoute = state.routes[state.index]?.name;
+  if (currentRoute && HIDDEN_ROUTES.has(currentRoute)) return null;
   return (
     <View
       pointerEvents="box-none"
@@ -31,13 +38,13 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
       <View
         className="flex-row items-center justify-between bg-bg-raised border border-border px-2"
         style={{
-          height: 72,
-          borderRadius: 28,
+          height: 70,
+          borderRadius: 30,
           shadowColor: '#000',
-          shadowOpacity: 0.18,
-          shadowRadius: 22,
-          shadowOffset: { width: 0, height: 10 },
-          elevation: 10,
+          shadowOpacity: 0.25,
+          shadowRadius: 24,
+          shadowOffset: { width: 0, height: 12 },
+          elevation: 12,
         }}
       >
         {state.routes.map((route, index) => {
@@ -61,6 +68,51 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
             }
           };
 
+          // Center "Coach" tab — raised violet orb (Sahha design).
+          if (route.name === 'coach') {
+            return (
+              <Pressable
+                key={route.key}
+                onPress={onPress}
+                accessibilityRole="button"
+                accessibilityState={focused ? { selected: true } : {}}
+                className="flex-1 items-center justify-center"
+                style={{ height: '100%' }}
+              >
+                <View
+                  className="items-center justify-center overflow-hidden rounded-full"
+                  style={{
+                    width: 54,
+                    height: 54,
+                    marginTop: -26,
+                    shadowColor: '#6366F1',
+                    shadowOpacity: 0.55,
+                    shadowRadius: 14,
+                    shadowOffset: { width: 0, height: 6 },
+                    elevation: 10,
+                  }}
+                >
+                  <LinearGradient
+                    colors={
+                      ['#B06BFF', '#6366F1'] as unknown as readonly [string, string, ...string[]]
+                    }
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+                  />
+                  <Icon name="sparkles" size={24} color="#FFFFFF" strokeWidth={2.2} />
+                </View>
+                <Text
+                  className={`text-[10px] mt-1 tracking-wider uppercase ${
+                    focused ? 'text-ink font-extrabold' : 'text-ink-muted font-bold'
+                  }`}
+                >
+                  {label}
+                </Text>
+              </Pressable>
+            );
+          }
+
           return (
             <Pressable
               key={route.key}
@@ -70,45 +122,15 @@ export function TabBar({ state, descriptors, navigation }: BottomTabBarProps) {
               className="flex-1 items-center justify-center"
               style={{ height: '100%' }}
             >
-              <View
-                className="items-center justify-center overflow-hidden"
-                style={{
-                  width: 46,
-                  height: 36,
-                  borderRadius: 18,
-                  shadowColor: focused ? '#FF4D2E' : 'transparent',
-                  shadowOpacity: focused ? 0.5 : 0,
-                  shadowRadius: focused ? 12 : 0,
-                  shadowOffset: { width: 0, height: 4 },
-                  elevation: focused ? 6 : 0,
-                }}
-              >
-                {focused ? (
-                  <LinearGradient
-                    colors={
-                      ['#FF4D2E', '#F97316'] as unknown as readonly [string, string, ...string[]]
-                    }
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                    }}
-                  />
-                ) : null}
-                <Icon
-                  name={icon}
-                  size={focused ? 22 : 20}
-                  color={focused ? '#FFFFFF' : '#A1A1AA'}
-                  strokeWidth={focused ? 2.4 : 1.9}
-                />
-              </View>
+              <Icon
+                name={icon}
+                size={22}
+                color={focused ? '#F4F4F7' : '#74748A'}
+                strokeWidth={focused ? 2.3 : 1.9}
+              />
               <Text
                 className={`text-[10px] mt-1 tracking-wider uppercase ${
-                  focused ? 'text-accent font-extrabold' : 'text-ink-muted font-bold'
+                  focused ? 'text-ink font-extrabold' : 'text-ink-muted font-bold'
                 }`}
               >
                 {label}

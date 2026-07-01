@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { useEffect, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { ExerciseAnimation } from './ExerciseAnimation';
@@ -16,6 +15,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Icon, Screen } from '@features/shared';
 import { useDraftRoutineStore } from '../store';
+import { useWorkoutProgressStore } from '../progressStore';
 import { exerciseImages, exerciseInfo } from '../data/exerciseLookup';
 
 const ACCENT = '#F97316';
@@ -38,9 +38,14 @@ const MUSCLE_COLORS: Record<string, string> = {
 export function WorkoutWalkthroughScreen() {
   const { t } = useTranslation();
   const router = useRouter();
-  const { week, day } = useLocalSearchParams<{ week?: string; day?: string }>();
+  const { week, day, pid } = useLocalSearchParams<{
+    week?: string;
+    day?: string;
+    pid?: string;
+  }>();
   const draft = useDraftRoutineStore((s) => s.draft);
   const program = draft && draft.kind === 'program' ? draft.program : null;
+  const markComplete = useWorkoutProgressStore((s) => s.markComplete);
 
   const wk = parseInt(week ?? '1', 10);
   const di = parseInt(day ?? '0', 10);
@@ -54,7 +59,7 @@ export function WorkoutWalkthroughScreen() {
   const accent = ex?.muscle_group
     ? (MUSCLE_COLORS[ex.muscle_group.toLowerCase()] ?? ACCENT)
     : ACCENT;
-  const images = ex ? exerciseImages(ex.name) : [];
+  const images = ex ? exerciseImages(ex.name, ex.muscle_group) : [];
   const info = ex ? exerciseInfo(ex.name) : null;
 
   const progress = exercises.length ? (exIdx + 1) / exercises.length : 0;
@@ -91,7 +96,7 @@ export function WorkoutWalkthroughScreen() {
             style={{
               backgroundColor: '#17171B',
               borderWidth: 1,
-              borderColor: '#27272F',
+              borderColor: '#21212B',
             }}
           >
             <Text className="text-ink-muted font-bold">{t('common.back')}</Text>
@@ -103,7 +108,13 @@ export function WorkoutWalkthroughScreen() {
 
   const isLast = exIdx === exercises.length - 1;
   const goPrev = () => setExIdx((i) => Math.max(0, i - 1));
-  const goNext = () => (isLast ? router.replace('/(tabs)') : setExIdx((i) => i + 1));
+  const finish = () => {
+    // Mark this program day done so it shows as completed on return instead of
+    // looking like an untouched session the user still has to do.
+    if (pid) markComplete(pid, wk, di);
+    router.replace('/(tabs)');
+  };
+  const goNext = () => (isLast ? finish() : setExIdx((i) => i + 1));
 
   return (
     <Screen padded={false}>
@@ -118,10 +129,10 @@ export function WorkoutWalkthroughScreen() {
               height: 36,
               backgroundColor: '#17171B',
               borderWidth: 1,
-              borderColor: '#27272F',
+              borderColor: '#21212B',
             }}
           >
-            <Icon name="x" size={16} color="#A1A1AA" />
+            <Icon name="x" size={16} color="#B4B4C2" />
           </Pressable>
 
           <View className="flex-row items-center" style={{ gap: 6 }}>
@@ -274,12 +285,12 @@ export function WorkoutWalkthroughScreen() {
                 borderRadius: 24,
                 backgroundColor: '#17171B',
                 borderWidth: 1,
-                borderColor: '#27272F',
+                borderColor: '#21212B',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Icon name="dumbbell" size={42} color="#3F3F46" />
+              <Icon name="dumbbell" size={42} color="#34343F" />
             </View>
           )}
         </Animated.View>
@@ -404,7 +415,7 @@ export function WorkoutWalkthroughScreen() {
                     style={{
                       backgroundColor: 'rgba(255,255,255,0.04)',
                       borderWidth: 1,
-                      borderColor: '#27272F',
+                      borderColor: '#21212B',
                     }}
                   >
                     <Text
@@ -427,7 +438,7 @@ export function WorkoutWalkthroughScreen() {
         style={{
           backgroundColor: 'rgba(11,11,15,0.96)',
           borderTopWidth: 1,
-          borderColor: '#27272F',
+          borderColor: '#21212B',
         }}
       >
         <View className="flex-row" style={{ gap: 10 }}>
@@ -440,13 +451,13 @@ export function WorkoutWalkthroughScreen() {
                 borderRadius: 16,
                 backgroundColor: '#17171B',
                 borderWidth: 1,
-                borderColor: '#27272F',
+                borderColor: '#21212B',
                 flexDirection: 'row',
                 alignItems: 'center',
                 justifyContent: 'center',
               }}
             >
-              <Icon name="chevron-left" size={14} color="#A1A1AA" />
+              <Icon name="chevron-left" size={14} color="#B4B4C2" />
               <Text
                 className="text-ink-muted font-bold tracking-tight ml-1.5"
                 style={{ fontSize: 14 }}
@@ -478,7 +489,7 @@ function Tag({ children }: { children: string }) {
         paddingVertical: 4,
         backgroundColor: 'rgba(255,255,255,0.04)',
         borderWidth: 1,
-        borderColor: '#27272F',
+        borderColor: '#21212B',
       }}
     >
       <Text
@@ -500,14 +511,14 @@ function SpecBig({ label, value, accent }: { label: string; value: string; accen
         paddingHorizontal: 14,
         backgroundColor: accent ? `${accent}10` : '#17171B',
         borderWidth: 1,
-        borderColor: accent ? `${accent}30` : '#27272F',
+        borderColor: accent ? `${accent}30` : '#21212B',
       }}
     >
       <Text
         className="text-[9px] font-extrabold uppercase mb-1"
         style={{
           letterSpacing: 1,
-          color: accent ?? '#A1A1AA',
+          color: accent ?? '#B4B4C2',
         }}
       >
         {label}
@@ -516,7 +527,7 @@ function SpecBig({ label, value, accent }: { label: string; value: string; accen
         className="font-extrabold tracking-tight"
         style={{
           fontSize: 18,
-          color: accent ?? '#F4F4F5',
+          color: accent ?? '#F4F4F7',
         }}
       >
         {value}

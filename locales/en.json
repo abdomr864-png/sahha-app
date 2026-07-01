@@ -27,7 +27,8 @@
     "accept": "Accept",
     "reject": "Reject",
     "ok": "OK",
-    "go": "GO"
+    "go": "GO",
+    "dismiss": "Dismiss"
   },
   "errors": {
     "network": "You appear to be offline. Changes will sync when you're back.",
@@ -48,12 +49,12 @@
       "entitlement_required": "This is a premium feature.",
       "invalid_request": "Something was wrong with that request.",
       "invalid_input": "Couldn't understand the input.",
-      "invalid_response": "The AI returned an unexpected response. Please try again.",
+      "invalid_response": "That didn't come back as expected. Please try again.",
       "insufficient_data": "Not enough recent training to suggest changes.",
       "invalid_video": "Video URL is invalid or not yours.",
       "unsafe_content": "The content was flagged as unsafe.",
       "no_food_detected": "We couldn't see any food in that photo. Try a clearer shot of your meal.",
-      "provider_error": "AI service is having trouble. Try again."
+      "provider_error": "Couldn't complete that. Please try again."
     }
   },
   "auth": {
@@ -157,11 +158,26 @@
     "activityLevel": {
       "title": "How active are you outside training?",
       "subtitle": "Daily movement — desk job, walks, kids, etc.",
-      "sedentary": { "label": "Sedentary", "desc": "Mostly sitting, little walking" },
-      "light": { "label": "Lightly active", "desc": "Some walking, light chores" },
-      "moderate": { "label": "Moderately active", "desc": "On your feet, regular movement" },
-      "very": { "label": "Very active", "desc": "Physical job or daily exercise" },
-      "extra": { "label": "Extra active", "desc": "Athlete or hard manual labor" }
+      "sedentary": {
+        "label": "Sedentary",
+        "desc": "Mostly sitting, little walking"
+      },
+      "light": {
+        "label": "Lightly active",
+        "desc": "Some walking, light chores"
+      },
+      "moderate": {
+        "label": "Moderately active",
+        "desc": "On your feet, regular movement"
+      },
+      "very": {
+        "label": "Very active",
+        "desc": "Physical job or daily exercise"
+      },
+      "extra": {
+        "label": "Extra active",
+        "desc": "Athlete or hard manual labor"
+      }
     },
     "targetWeight": {
       "title": "What's your target weight?",
@@ -174,18 +190,42 @@
     "goalPace": {
       "title": "How fast do you want to progress?",
       "subtitle": "Faster = bigger calorie shift each day.",
-      "slow": { "label": "Steady", "desc": "~250 kcal/day shift • easiest to sustain" },
-      "standard": { "label": "Balanced", "desc": "~500 kcal/day shift • recommended" },
-      "aggressive": { "label": "Aggressive", "desc": "~750 kcal/day shift • requires discipline" }
+      "slow": {
+        "label": "Steady",
+        "desc": "~250 kcal/day shift • easiest to sustain"
+      },
+      "standard": {
+        "label": "Balanced",
+        "desc": "~500 kcal/day shift • recommended"
+      },
+      "aggressive": {
+        "label": "Aggressive",
+        "desc": "~750 kcal/day shift • requires discipline"
+      }
     },
     "diet": {
       "title": "What do you eat?",
       "subtitle": "We use this to set the right macro split.",
-      "omnivore": { "label": "Omnivore", "desc": "No restrictions" },
-      "vegetarian": { "label": "Vegetarian", "desc": "No meat" },
-      "vegan": { "label": "Vegan", "desc": "Plant-based only" },
-      "keto": { "label": "Keto", "desc": "Very low carbs, high fat" },
-      "low_carb": { "label": "Low carb", "desc": "Reduced carbs" }
+      "omnivore": {
+        "label": "Omnivore",
+        "desc": "No restrictions"
+      },
+      "vegetarian": {
+        "label": "Vegetarian",
+        "desc": "No meat"
+      },
+      "vegan": {
+        "label": "Vegan",
+        "desc": "Plant-based only"
+      },
+      "keto": {
+        "label": "Keto",
+        "desc": "Very low carbs, high fat"
+      },
+      "low_carb": {
+        "label": "Low carb",
+        "desc": "Reduced carbs"
+      }
     }
   },
   "tabs": {
@@ -195,6 +235,69 @@
     "progress": "Progress",
     "feed": "Feed",
     "profile": "Profile"
+  },
+  "pantry": {
+    "title": "What can I eat?",
+    "entryTitle": "What can I eat?",
+    "entrySub": "Scan your fridge → meals that fill your macros",
+    "stepScan": "Scan",
+    "stepConfirm": "Confirm",
+    "stepSuggest": "Suggest",
+    "scanTitle": "Scan your ingredients",
+    "scanBody": "Snap your fridge or pantry. We suggest meals that fill the macros you have left today.",
+    "camera": "Camera",
+    "gallery": "Gallery",
+    "analyze": "Find meals",
+    "analyzing": "Reading your ingredients…",
+    "permissionTitle": "Permission needed",
+    "permissionBody": "Allow camera / photo access to scan your ingredients.",
+    "useSaved": "Use saved pantry",
+    "viewLast": "View last suggestions",
+    "confirmTitle": "Confirm ingredients",
+    "confirmBody": "Remove anything wrong, add what we missed. Nothing proceeds until you confirm.",
+    "empty": "No ingredients yet — add some to continue.",
+    "unmatched": "Couldn't match — tap to search",
+    "added": "Added",
+    "conf_high": "High confidence",
+    "conf_medium": "Medium confidence",
+    "conf_low": "Low confidence",
+    "addManual": "Add ingredient",
+    "getSuggestions": "Suggest meals",
+    "needIngredientTitle": "Add an ingredient",
+    "needIngredientBody": "Add at least one recognised ingredient to get suggestions.",
+    "remainingToday": "Remaining today",
+    "kcal": "kcal",
+    "protein": "Protein",
+    "carbs": "Carbs",
+    "fat": "Fat",
+    "setGoalHint": "Set your goal in your profile for personalised targets.",
+    "ramadan": "Ramadan mode",
+    "ramadanHydration": "Stay hydrated between iftar and suhoor — sip water regularly.",
+    "weakFit": "Closest options below — they don't fully fill your remaining macros.",
+    "noMatchTitle": "No good match yet",
+    "noMatchBody": "Add a few more ingredients (a protein and a carb help most) and try again.",
+    "fit": "Fit",
+    "coversProtein": "Covers {{pct}}% of remaining protein",
+    "shortfallProtein": "add a protein source to round this out",
+    "shortfallCarbs": "add a carb source to round this out",
+    "shortfallFat": "add a healthy fat to round this out",
+    "shortfallKcal": "a bit light on calories",
+    "logThis": "Log this",
+    "logged": "Logged ✓",
+    "logFailedTitle": "Could not log",
+    "logFailedBody": "Try again.",
+    "signInTitle": "Sign in required",
+    "signInBody": "Sign in to log meals to your daily total.",
+    "editIngredients": "Edit",
+    "scanAgain": "Scan again",
+    "searchFood": "Search food",
+    "searchPlaceholder": "e.g. chicken, rice, tomato…",
+    "noResults": "No matches in the food database.",
+    "needsConnection": "Scanning needs a connection. Showing your saved pantry.",
+    "noFood": "No food detected — try a clearer photo of your ingredients.",
+    "noSuggestions": "Couldn't build a meal from those ingredients. Add a few more.",
+    "genericError": "Something went wrong. Try again.",
+    "disclaimer": "Suggestions are general guidance, not medical or nutrition advice."
   },
   "home": {
     "todaysWorkout": "Today's workout",
@@ -211,8 +314,8 @@
     "startTitle": "Ready to start?",
     "startTagline": "Build your AI program in 30 seconds",
     "startCta": "Get started",
-    "continueTitle": "Pick up where you left off",
-    "continueTagline": "Your program is ready — continue today's workout",
+    "continueTitle": "Let's continue",
+    "continueTagline": "Your program is ready — pick up where you left off",
     "continueCta": "Continue",
     "mealParseTitle": "Snap a meal",
     "mealParseTaglinePro": "Photo → calories, macros, instant",
@@ -224,9 +327,11 @@
     "programReview": "Your program review is ready",
     "adaptiveAI": "Adaptive AI",
     "aiVision": "AI Vision",
-    "formCheckTitle": "AI Form Check",
+    "formCheckTitle": "Form Check",
     "formCheckTagline": "Record a set, get pro feedback",
     "aiScan": "AI Scan",
+    "whatToEat": "What to eat",
+    "whatToEatSub": "Macro-fit meals",
     "equipmentScanTitle": "Scan any equipment",
     "equipmentScanTagline": "Hotel, gym, or home — we adapt",
     "caloriesEaten": "Calories eaten",
@@ -237,6 +342,7 @@
     "activeMin": "Active min",
     "workouts": "Workouts",
     "distance": "Distance",
+    "volume": "Volume",
     "sleptLastNight": "Slept last night",
     "restingHr": "Resting HR",
     "hrv": "HRV",
@@ -379,6 +485,33 @@
       "save": "Save {{percent}}%",
       "perMonth": "/ month",
       "perYear": "/ year",
+      "oneTime": "one-time",
+      "tiers": {
+        "pro": {
+          "name": "Pro",
+          "sub": "or $11.99 / mo · 7-day trial",
+          "f1": "Full recovery: HRV + ACWR",
+          "f2": "Strength levels & badges",
+          "f3": "Apple Watch app",
+          "f4": "Unlimited history + analytics"
+        },
+        "elite": {
+          "name": "Elite",
+          "sub": "or $19.99 / mo · 7-day trial",
+          "badge": "Most popular",
+          "f1": "Everything in Pro",
+          "f2": "Unlimited AI coach & chat",
+          "f3": "Equipment scan, form check & meal AI",
+          "f4": "Adaptive AI programs"
+        },
+        "lifetime": {
+          "name": "Lifetime",
+          "sub": "Pay once · keep forever",
+          "f1": "Everything in Elite, forever",
+          "f2": "AI fair-use included",
+          "f3": "All future updates"
+        }
+      },
       "cta": "Start free trial",
       "ctaActive": "You're on Premium",
       "restore": "Restore purchase",
@@ -564,6 +697,13 @@
       "analyze": "Analyze with AI",
       "uploading": "Uploading photo…",
       "analyzing": "Analyzing nutrition…",
+      "analyzeSub": "AI Vision · takes a few seconds",
+      "stages": {
+        "look": "Looking at your plate…",
+        "identify": "Identifying ingredients…",
+        "portions": "Estimating portions…",
+        "macros": "Crunching the macros…"
+      },
       "saved": "Saved to log ✓",
       "ingredients": "Ingredients",
       "aiVerdict": "AI VERDICT",
@@ -600,19 +740,32 @@
       "notesPlaceholder": "e.g. avoid deadlifts, prefer mornings, focus on shoulders",
       "generate": "Generate",
       "upgradeHint": "AI-generated programs are a premium feature. Upgrade to unlock.",
-      "goals": { "hypertrophy": "Build muscle", "strength": "Get stronger", "recomp": "Recomposition" },
+      "goals": {
+        "hypertrophy": "Build muscle",
+        "strength": "Get stronger",
+        "recomp": "Recomposition"
+      },
       "goalSub": {
         "hypertrophy": "Hypertrophy focus",
         "strength": "Strength focus",
         "recomp": "Lean & build"
       },
-      "exps": { "beginner": "Beginner", "intermediate": "Intermediate", "advanced": "Advanced" },
+      "exps": {
+        "beginner": "Beginner",
+        "intermediate": "Intermediate",
+        "advanced": "Advanced"
+      },
       "expSub": {
         "beginner": "< 1 year training",
         "intermediate": "1–3 years",
         "advanced": "3+ years"
       },
-      "eqs": { "full_gym": "Full gym", "home_dumbbells": "Home (dumbbells)", "bodyweight": "Bodyweight only", "minimal": "Minimal (bands + DBs)" },
+      "eqs": {
+        "full_gym": "Full gym",
+        "home_dumbbells": "Home (dumbbells)",
+        "bodyweight": "Bodyweight only",
+        "minimal": "Minimal (bands + DBs)"
+      },
       "eqSub": {
         "full_gym": "Racks, machines, cables",
         "home_dumbbells": "Adjustable or fixed",
@@ -661,17 +814,37 @@
       "fix": "What to fix",
       "safety": "⚠ Safety warning",
       "analyzing": "Analyzing form…",
+      "analyzeStages": {
+        "extract": "Extracting key frames…",
+        "joints": "Tracking your joints…",
+        "angles": "Measuring joint angles…",
+        "scoring": "Scoring your form…"
+      },
+      "analyzeSub": "AI VISION · ANALYZING YOUR REPS",
+      "analyzeFoot": "ANALYZING",
       "record": "Record video",
       "howto": "How to record",
       "howtoBody": "Frame yourself from the side. Record 1 full rep (≈10s).",
       "weeklyLimit": "Weekly limit reached",
       "upgradeHint": "Upgrade to get unlimited form checks.",
       "empty": "No form checks yet.",
-      "severity": { "minor": "Minor", "moderate": "Moderate", "major": "Major" }
+      "severity": {
+        "minor": "Minor",
+        "moderate": "Moderate",
+        "major": "Major"
+      }
     },
     "adjust": {
       "title": "Weekly review",
       "loading": "Reviewing your week…",
+      "analyzeStages": {
+        "reading": "Reading last week's logs…",
+        "volume": "Checking volume & intensity…",
+        "recovery": "Gauging your recovery…",
+        "tuning": "Tuning your program…"
+      },
+      "analyzeSub": "AI COACH · REVIEWING YOUR WEEK",
+      "analyzeFoot": "REVIEWING",
       "summary": "Summary",
       "apply": "Apply selected",
       "bannerTitle": "WEEKLY REVIEW",
@@ -759,9 +932,20 @@
       "almost": "Almost ready…"
     },
     "tapToScan": "Tap to scan · Pick from gallery",
-    "results": { "title": "Scan results", "empty": "No scan to show." },
-    "confidence": { "high": "HIGH CONFIDENCE", "medium": "MEDIUM CONFIDENCE", "low": "LOW CONFIDENCE" },
-    "lvl": { "beginner": "Beginner", "intermediate": "Intermediate", "advanced": "Advanced" }
+    "results": {
+      "title": "Scan results",
+      "empty": "No scan to show."
+    },
+    "confidence": {
+      "high": "HIGH CONFIDENCE",
+      "medium": "MEDIUM CONFIDENCE",
+      "low": "LOW CONFIDENCE"
+    },
+    "lvl": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    }
   },
   "routines": {
     "title": "Routines",
@@ -815,6 +999,8 @@
     "weekN": "Week {{n}}",
     "deload": "Deload",
     "startWorkout": "Start workout",
+    "completed": "Completed",
+    "redoWorkout": "Redo workout",
     "workoutNotFound": "Workout not found",
     "liveDay": "Live · {{name}}",
     "exShort": "{{count}} ex",
@@ -846,14 +1032,20 @@
     "saving": "Saving…",
     "saveAndStartWeek1": "Save & start week 1",
     "saveWithoutStarting": "Save without starting",
-    "preview": "Preview",
     "loadingMessages": {
       "reading": "Reading your recent workouts…",
       "recovery": "Checking your recovery…",
       "nutrition": "Looking at your nutrition…",
       "building": "Building today's session…",
       "almost": "Almost there…"
-    }
+    },
+    "analyzeSub": "AI COACH · BUILDING YOUR SESSION",
+    "analyzeFoot": "BUILDING",
+    "aiWorkout": "AI Workout",
+    "setsShort": "Sets",
+    "focusShort": "Focus",
+    "warmupTag": "Warm-up",
+    "regenerating": "Regenerating…"
   },
   "exercise": {
     "muscles": "MUSCLES",
@@ -879,6 +1071,31 @@
     "body": "BODY",
     "measurements": "Measurements"
   },
+  "health": {
+    "title": "Connect your health data",
+    "body": "Sahha reads your activity and recovery to personalize training. Your data stays private and is read-only.",
+    "grant": "Connect health data",
+    "syncing": "Syncing…",
+    "privacy": "How we use your health data",
+    "grantedTitle": "You're connected",
+    "grantedBody": "Your activity and recovery will keep syncing in the background.",
+    "partialTitle": "Partly connected",
+    "partialBody": "Some metrics are connected. You can grant the rest anytime in your health settings.",
+    "deniedTitle": "Permission needed",
+    "deniedBody": "Sahha needs access to your health data to show activity and recovery. You can enable it in your system health settings.",
+    "installTitle": "Install Health Connect",
+    "installBody": "Sahha reads your activity and recovery through Health Connect. Install it from the Play Store, then come back.",
+    "install": "Install Health Connect",
+    "recheck": "I've installed it",
+    "unavailableTitle": "Health data unavailable",
+    "unavailableBody": "This device has no health source Sahha can read. You can still log workouts and meals manually.",
+    "metrics": {
+      "steps": "Steps & distance",
+      "workouts": "Workouts & active minutes",
+      "sleep": "Sleep",
+      "heart": "Resting heart rate & HRV"
+    }
+  },
   "wearables": {
     "profileRow": "Wearables & health",
     "permissions": {
@@ -888,11 +1105,26 @@
       "skip": "Skip for now",
       "unavailable": "Health data isn't available on this device.",
       "categories": {
-        "activity": { "label": "Activity", "desc": "Steps and calories burned" },
-        "heart": { "label": "Heart", "desc": "Heart rate, resting HR, HRV" },
-        "sleep": { "label": "Sleep", "desc": "Sleep duration and quality" },
-        "body": { "label": "Body", "desc": "Weight and body composition" },
-        "workouts": { "label": "Workouts", "desc": "Auto-import sessions from your watch" }
+        "activity": {
+          "label": "Activity",
+          "desc": "Steps and calories burned"
+        },
+        "heart": {
+          "label": "Heart",
+          "desc": "Heart rate, resting HR, HRV"
+        },
+        "sleep": {
+          "label": "Sleep",
+          "desc": "Sleep duration and quality"
+        },
+        "body": {
+          "label": "Body",
+          "desc": "Weight and body composition"
+        },
+        "workouts": {
+          "label": "Workouts",
+          "desc": "Auto-import sessions from your watch"
+        }
       }
     },
     "settings": {
@@ -923,6 +1155,222 @@
       "workouts": "Workouts",
       "weight": "Weight",
       "body_fat": "Body fat"
+    }
+  },
+  "spotify": {
+    "profileRow": "Spotify",
+    "openSpotify": "Open Spotify",
+    "prompt": {
+      "title": "Add your workout soundtrack",
+      "subtitle": "Connect Spotify to control music without leaving your session.",
+      "connect": "Connect"
+    },
+    "player": {
+      "nothingPlaying": "Nothing playing",
+      "choosePlaylist": "Choose a playlist",
+      "openLibrary": "Your playlists"
+    },
+    "picker": {
+      "title": "Your playlists",
+      "trackCount": "{{count}} tracks",
+      "empty": "No playlists found.",
+      "error": "Couldn't load your playlists."
+    },
+    "free": {
+      "controlsPremium": "Playback control needs Spotify Premium. Open Spotify to play music."
+    },
+    "noApp": {
+      "message": "Open the Spotify app to control playback from there."
+    },
+    "settings": {
+      "title": "Spotify",
+      "subtitle": "Control your workout music in-app.",
+      "connect": "Connect Spotify",
+      "disconnect": "Disconnect Spotify",
+      "connected": "Connected",
+      "notConnected": "Not connected",
+      "premium": "Premium",
+      "free": "Free",
+      "unconfigured": "Spotify isn't set up in this build yet.",
+      "privacy": "Sahha never stores your Spotify password. You can disconnect anytime — this clears the saved login from your device."
+    }
+  },
+  "recovery": {
+    "readiness": "Readiness",
+    "building": "Building baseline",
+    "buildingMessage": "Keep wearing your device — your readiness score unlocks after a week of data.",
+    "buildingShort": "building…",
+    "band": {
+      "recovered": "Recovered",
+      "moderate": "Moderate",
+      "fatigued": "Fatigued"
+    },
+    "messageRecovered": "You're recovered — good day to push.",
+    "messageModerate": "Moderately recovered — train as planned and listen to your body.",
+    "messageFatigued": "Take it easy today — prioritize rest and recovery.",
+    "sleep": "Sleep",
+    "restingHr": "Resting HR",
+    "hrv": "HRV",
+    "noData": "No data",
+    "vsGoal": "vs goal",
+    "onGoal": "on goal",
+    "vsAvg": "vs avg",
+    "atAvg": "at avg",
+    "deloadTitle": "Deload recommended",
+    "deloadReasonLoad": "Your training load has spiked well above your recent baseline — a lighter week now lowers injury risk.",
+    "deloadReasonSuppressed": "Your recovery has been low for {{count}} days straight — your body is asking for a lighter week."
+  },
+  "strength": {
+    "title": "Strength",
+    "subtitle": "Levels & badges",
+    "kicker": "STRENGTH LEVEL",
+    "openBadges": "Open badges",
+    "disclaimer": "Estimates use the Epley formula on your logged sets. Levels are relative-strength standards by bodyweight & sex.",
+    "tabs": {
+      "levels": "Levels",
+      "badges": "Badges"
+    },
+    "level": {
+      "beginner": "Beginner",
+      "novice": "Novice",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "elite": "Elite"
+    },
+    "lifts": {
+      "squat": "Back Squat",
+      "bench": "Bench Press",
+      "deadlift": "Deadlift",
+      "overhead_press": "Overhead Press",
+      "barbell_row": "Barbell Row"
+    },
+    "composite": {
+      "subtitle": "Overall · {{count}} lifts",
+      "locked": "Add bodyweight to see your level"
+    },
+    "liftCard": {
+      "est1rm": "Est. 1RM",
+      "bestSet": "{{weight}}{{unit}} × {{reps}}",
+      "nextLevel": "{{remaining}}{{unit}} to {{level}}",
+      "maxLevel": "Maxed out",
+      "noData": "No sets yet",
+      "needsProfileInline": "Add bodyweight to rank"
+    },
+    "empty": {
+      "title": "Log a few sets to unlock your level",
+      "body": "Record working sets on the main lifts — squat, bench, deadlift, overhead press, row — and we'll estimate your 1RM and rank your strength."
+    },
+    "needsProfile": {
+      "title": "Add bodyweight & sex",
+      "bodyBoth": "Strength levels are relative to bodyweight. Add your weight and sex in your profile.",
+      "bodyWeight": "Strength levels are relative to bodyweight. Add your weight in your profile.",
+      "bodySex": "Add your sex in your profile to classify your lifts."
+    },
+    "badges": {
+      "earned": "Earned",
+      "locked": "Locked",
+      "count": "{{earned}}/{{total}}",
+      "noneEarned": "No badges yet — keep logging to start earning them.",
+      "levelTitle": "{{level}} {{lift}}",
+      "levelDesc": "Tier reached",
+      "milestone": {
+        "firstPr": {
+          "title": "First PR",
+          "desc": "Logged your first estimate"
+        },
+        "plate1": {
+          "title": "1 Plate",
+          "desc": "60 kg on a main lift"
+        },
+        "plate2": {
+          "title": "2 Plate Club",
+          "desc": "100 kg on a main lift"
+        },
+        "plate3": {
+          "title": "3 Plate Club",
+          "desc": "140 kg on a main lift"
+        },
+        "plate4": {
+          "title": "4 Plate Club",
+          "desc": "180 kg on a main lift"
+        },
+        "bodyweightBench": {
+          "title": "Bodyweight Bench",
+          "desc": "Bench your bodyweight"
+        },
+        "squat15x": {
+          "title": "1.5× Squat",
+          "desc": "Squat 1.5× bodyweight"
+        },
+        "deadlift2x": {
+          "title": "2× Deadlift",
+          "desc": "Deadlift 2× bodyweight"
+        }
+      }
+    },
+    "celebrate": {
+      "levelUp": "LEVEL UP",
+      "levelUpBody": "{{lift}} · {{level}}",
+      "badge": "BADGE UNLOCKED",
+      "tapToContinue": "Tap to continue"
+    },
+    "progressCard": {
+      "title": "Strength level",
+      "sub": "Lifts, levels & badges"
+    }
+  },
+  "readiness": {
+    "kicker": "Today",
+    "state": {
+      "primed": "Primed",
+      "ready": "Ready",
+      "caution": "Caution",
+      "rest": "Rest"
+    },
+    "line": {
+      "primed": "You're primed — a great day to push for a little more.",
+      "ready": "You're ready — train as planned.",
+      "caution": "Ease off today — lighter loads, capped intensity.",
+      "rest": "Rest day — keep it to active recovery."
+    },
+    "adj": {
+      "load": "Load ×{{mult}}",
+      "noRpeCap": "No RPE cap",
+      "rpeCap": "RPE ≤ {{cap}}",
+      "trimAccessories": "Trim accessories",
+      "activeRecovery": "Active recovery only"
+    },
+    "why": "Why",
+    "driver": {
+      "acwr": {
+        "positive": "Training load is in the sweet spot (ACWR {{value}}).",
+        "negative": "Training load has spiked — you're overreaching (ACWR {{value}}).",
+        "neutral": "Training load is slightly elevated (ACWR {{value}})."
+      },
+      "recovery": {
+        "positive": "Recovery is high ({{value}}/100).",
+        "negative": "Recovery is low ({{value}}/100).",
+        "neutral": "Recovery is moderate ({{value}}/100)."
+      },
+      "rest": {
+        "negative": "No rest day in the last week."
+      },
+      "subjective": {
+        "negative": "You reported low energy and high soreness."
+      },
+      "none": "Not enough signal yet to explain today's verdict."
+    },
+    "checkin": {
+      "title": "How do you feel?",
+      "energy": "Energy",
+      "soreness": "Soreness"
+    },
+    "disclaimer": "Training guidance, not medical advice.",
+    "building": "Still building your baseline — this verdict sharpens after a week of data.",
+    "offline": "Showing your last saved verdict (offline).",
+    "locked": {
+      "title": "Unlock your daily readiness",
+      "body": "Get a daily verdict and an exact load adjustment from your recovery and training load."
     }
   }
 }

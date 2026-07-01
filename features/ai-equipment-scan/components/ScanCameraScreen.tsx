@@ -85,7 +85,17 @@ export function ScanCameraScreen() {
                   'You can scan 5 pieces of equipment per day on the free plan.',
                 )}
           </Text>
-          <Button label={t('common.back', 'Back')} onPress={() => router.back()} />
+          <Button
+            label={t('premium.upgrade', 'Upgrade to Premium')}
+            icon="sparkles"
+            onPress={() => router.push('/paywall')}
+          />
+          <View className="h-3" />
+          <Button
+            label={t('common.back', 'Back')}
+            variant="secondary"
+            onPress={() => router.back()}
+          />
         </View>
       </Screen>
     );
@@ -212,7 +222,7 @@ export function ScanCameraScreen() {
             className="w-14 h-14 rounded-2xl bg-bg/70 border border-border items-center justify-center"
             style={{ opacity: busy ? 0.4 : 1 }}
           >
-            <Icon name="image" size={24} color="#F4F4F5" />
+            <Icon name="image" size={24} color="#F4F4F7" />
           </Pressable>
 
           <Pressable

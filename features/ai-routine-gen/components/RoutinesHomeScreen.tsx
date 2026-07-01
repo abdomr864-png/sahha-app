@@ -44,9 +44,9 @@ export function RoutinesHomeScreen() {
         <View
           className="rounded-3xl mb-7"
           style={{
-            backgroundColor: '#13131A',
+            backgroundColor: '#14141C',
             borderWidth: 1,
-            borderColor: '#27272F',
+            borderColor: '#21212B',
             padding: 18,
           }}
         >
@@ -124,9 +124,9 @@ export function RoutinesHomeScreen() {
           <View
             className="rounded-3xl items-center"
             style={{
-              backgroundColor: '#13131A',
+              backgroundColor: '#14141C',
               borderWidth: 1,
-              borderColor: '#27272F',
+              borderColor: '#21212B',
               padding: 28,
             }}
           >
@@ -185,9 +185,9 @@ function HeroStat({ label, value }: { label: string; value: string }) {
         flex: 1,
         paddingVertical: 10,
         paddingHorizontal: 12,
-        backgroundColor: '#1B1B24',
+        backgroundColor: '#1B1B25',
         borderWidth: 1,
-        borderColor: '#27272F',
+        borderColor: '#21212B',
       }}
     >
       <Text className="text-ink text-xl font-extrabold tracking-tight">{value}</Text>
@@ -225,9 +225,9 @@ function ActionTile({
         style={[
           animatedStyle,
           {
-            backgroundColor: '#13131A',
+            backgroundColor: '#14141C',
             borderWidth: 1,
-            borderColor: '#27272F',
+            borderColor: '#21212B',
             borderRadius: 20,
             padding: 16,
             minHeight: 108,
@@ -264,9 +264,9 @@ function RoutineRow({ routine, onPress }: { routine: SavedRoutineRow; onPress: (
         style={[
           animatedStyle,
           {
-            backgroundColor: '#13131A',
+            backgroundColor: '#14141C',
             borderWidth: 1,
-            borderColor: '#27272F',
+            borderColor: '#21212B',
           },
         ]}
       >

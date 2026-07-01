@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
@@ -43,7 +42,7 @@ export function ScanResultsScreen() {
         <Card>
           <View className="items-center mb-4">
             <View className="w-16 h-16 rounded-full bg-danger/15 border border-danger/40 items-center justify-center mb-3">
-              <Icon name="alert" size={28} color="#F87171" />
+              <Icon name="alert" size={28} color="#FF4D6D" />
             </View>
             <Text className="text-ink text-xl font-extrabold mb-2 text-center">
               {t('scan.notEquipmentTitle', "That doesn't look like gym equipment")}
@@ -348,7 +347,7 @@ export function ScanResultsScreen() {
             {eq.pro_tip ? (
               <CueCard
                 icon="sparkles"
-                accent="#FBBF24"
+                accent="#F5C451"
                 title={t('scan.proTip', 'PRO TIP')}
                 body={eq.pro_tip}
               />
@@ -364,7 +363,7 @@ export function ScanResultsScreen() {
             <SectionLabel
               icon="alert"
               label={t('scan.mistakes', 'COMMON MISTAKES')}
-              accentColor="#F87171"
+              accentColor="#FF4D6D"
             />
             <View style={{ gap: 8 }}>
               {eq.common_mistakes.map((m) => (
@@ -388,7 +387,7 @@ export function ScanResultsScreen() {
             style={{ backgroundColor: 'rgba(248,113,113,0.06)' }}
           >
             <View className="flex-row items-center mb-2">
-              <Icon name="alert" size={18} color="#F87171" />
+              <Icon name="alert" size={18} color="#FF4D6D" />
               <Text
                 className="text-danger text-[10px] font-extrabold ml-2"
                 style={{ letterSpacing: 1.4 }}
@@ -580,8 +579,8 @@ const EQUIPMENT_TYPE_META: Record<
 > = {
   machine: {
     icon: 'dumbbell',
-    color: '#7C3AED',
-    gradient: ['#1A0A1F', '#5B21B6', '#7C3AED'],
+    color: '#A855F7',
+    gradient: ['#1A0A1F', '#5B21B6', '#A855F7'],
   },
   free_weight: {
     icon: 'dumbbell',
@@ -595,8 +594,8 @@ const EQUIPMENT_TYPE_META: Record<
   },
   bodyweight: {
     icon: 'medal',
-    color: '#34D399',
-    gradient: ['#064E3B', '#10B981', '#34D399'],
+    color: '#2EE6A6',
+    gradient: ['#064E3B', '#10B981', '#2EE6A6'],
   },
   cardio: {
     icon: 'flame',
@@ -606,15 +605,15 @@ const EQUIPMENT_TYPE_META: Record<
 };
 
 const DIFFICULTY_COLOR: Record<'beginner' | 'intermediate' | 'advanced', string> = {
-  beginner: '#34D399',
-  intermediate: '#FBBF24',
-  advanced: '#F87171',
+  beginner: '#2EE6A6',
+  intermediate: '#F5C451',
+  advanced: '#FF4D6D',
 };
 
 const CONFIDENCE_META: Record<'high' | 'medium' | 'low', { color: string }> = {
-  high: { color: '#34D399' },
-  medium: { color: '#FBBF24' },
-  low: { color: '#F87171' },
+  high: { color: '#2EE6A6' },
+  medium: { color: '#F5C451' },
+  low: { color: '#FF4D6D' },
 };
 
 // Maps a scanned equipment name to a representative exercise's animation

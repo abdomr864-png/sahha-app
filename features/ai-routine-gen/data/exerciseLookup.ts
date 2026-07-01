@@ -137,12 +137,146 @@ const NAME_TO_ID: Record<string, string> = {
   'hollow body hold': 'Plank',
 };
 
-export function exerciseIdFor(name: string): string | null {
-  return NAME_TO_ID[name.trim().toLowerCase()] ?? null;
+// --- Fuzzy resolution -------------------------------------------------------
+// The AI (and the offline stub) emit free-form exercise names that often don't
+// match an alias above verbatim ("Barbell Bench Press" vs "bench press",
+// "Walking Lunge" vs "Dumbbell Lunges"). Without a match the walkthrough/detail
+// sheet render no image and no "how to do it" steps. To make sure *every*
+// exercise shows something, we fall back to a normalized, token-overlap search
+// across both the alias table and the full exercise DB.
+
+// Filler words that shouldn't drive a match on their own (equipment, position).
+const STOP_TOKENS = new Set([
+  'the',
+  'a',
+  'with',
+  'and',
+  'of',
+  'to',
+  'machine',
+  'cable',
+  'barbell',
+  'dumbbell',
+  'banded',
+  'band',
+  'seated',
+  'standing',
+  'lying',
+  'bench',
+  'smith',
+  'ez',
+  'bar',
+  'grip',
+  'wide',
+  'close',
+]);
+
+// Light stemming so plurals match ("lunges" ↔ "lunge", "flyes" ↔ "fly").
+function stem(token: string): string {
+  if (token.length > 4 && token.endsWith('es')) return token.slice(0, -2);
+  if (token.length > 3 && token.endsWith('s')) return token.slice(0, -1);
+  return token;
 }
 
-export function exerciseImageUrl(name: string, index = 0): string | null {
-  const id = exerciseIdFor(name);
+function tokenize(name: string): string[] {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, ' ')
+    .split(/\s+/)
+    .filter(Boolean)
+    .map(stem);
+}
+
+// Build the candidate index once: every alias key + every DB entry name, mapped
+// to its DB id, with a tokenized representation for overlap scoring.
+interface Candidate {
+  id: string;
+  tokens: string[];
+}
+const CANDIDATES: Candidate[] = (() => {
+  const out: Candidate[] = [];
+  for (const [alias, id] of Object.entries(NAME_TO_ID)) {
+    out.push({ id, tokens: tokenize(alias) });
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  for (const [id, entry] of Object.entries(db as Record<string, any>)) {
+    out.push({ id, tokens: tokenize(entry.name ?? id.replace(/_/g, ' ')) });
+  }
+  return out;
+})();
+
+function fuzzyIdFor(name: string): string | null {
+  const queryTokens = tokenize(name);
+  if (!queryTokens.length) return null;
+  const querySet = new Set(queryTokens);
+  const meaningful = queryTokens.filter((t) => !STOP_TOKENS.has(t));
+
+  let best: { id: string; score: number; extra: number } | null = null;
+  for (const cand of CANDIDATES) {
+    let score = 0;
+    for (const tok of cand.tokens) {
+      if (!querySet.has(tok)) continue;
+      // Weight non-filler tokens higher so "row" beats "barbell".
+      score += STOP_TOKENS.has(tok) ? 1 : 3;
+    }
+    if (score === 0) continue;
+    // Prefer candidates that overlap on a meaningful (non-filler) token.
+    const overlapsMeaningful = cand.tokens.some(
+      (tok) => !STOP_TOKENS.has(tok) && querySet.has(tok),
+    );
+    if (meaningful.length && !overlapsMeaningful) continue;
+    const extra = cand.tokens.filter((tok) => !querySet.has(tok)).length;
+    if (!best || score > best.score || (score === best.score && extra < best.extra)) {
+      best = { id: cand.id, score, extra };
+    }
+  }
+  return best?.id ?? null;
+}
+
+export function exerciseIdFor(name: string): string | null {
+  const exact = NAME_TO_ID[name.trim().toLowerCase()];
+  if (exact) return exact;
+  return fuzzyIdFor(name);
+}
+
+// Last-resort image fallback: a representative DB exercise per muscle group, so
+// a thumbnail/hero never falls back to a bare icon just because the name didn't
+// match. Keyed by the app's muscle_group vocabulary (not the DB's anatomical
+// terms). Every id here exists in the DB and has images.
+const MUSCLE_FALLBACK_ID: Record<string, string> = {
+  chest: 'Dumbbell_Bench_Press',
+  back: 'Bent_Over_Barbell_Row',
+  lats: 'Pullups',
+  shoulders: 'Standing_Military_Press',
+  'rear delts': 'Reverse_Flyes',
+  biceps: 'Barbell_Curl',
+  triceps: 'Triceps_Pushdown',
+  arms: 'Barbell_Curl',
+  quads: 'Barbell_Squat',
+  quadriceps: 'Barbell_Squat',
+  legs: 'Barbell_Squat',
+  hamstrings: 'Romanian_Deadlift',
+  glutes: 'Barbell_Hip_Thrust',
+  calves: 'Standing_Calf_Raises',
+  traps: 'Barbell_Shrug',
+  core: 'Plank',
+  abs: 'Plank',
+  abdominals: 'Plank',
+};
+
+function fallbackIdForMuscle(muscle?: string | null): string | null {
+  if (!muscle) return null;
+  return MUSCLE_FALLBACK_ID[muscle.trim().toLowerCase()] ?? null;
+}
+
+// Resolve a usable DB id from the exercise name, then (if no name match) from
+// the muscle group, so an image is always available when a muscle is known.
+function resolveId(name: string, muscle?: string | null): string | null {
+  return exerciseIdFor(name) ?? fallbackIdForMuscle(muscle);
+}
+
+export function exerciseImageUrl(name: string, index = 0, muscle?: string | null): string | null {
+  const id = resolveId(name, muscle);
   if (!id) return null;
   return `${CDN}/${id}/${index}.jpg`;
 }
@@ -156,8 +290,14 @@ export function exerciseInfo(name: string): ExerciseInfo | null {
   return { id, ...entry };
 }
 
-export function exerciseImages(name: string): string[] {
-  const info = exerciseInfo(name);
-  if (!info) return [];
-  return Array.from({ length: info.imageCount }, (_, i) => `${CDN}/${info.id}/${i}.jpg`);
+// Image frames for a hero/animation. Uses the name match first (so the steps
+// and pictures agree); if the name doesn't match but a muscle group is known,
+// falls back to a representative exercise's images so a picture still shows.
+export function exerciseImages(name: string, muscle?: string | null): string[] {
+  const id = resolveId(name, muscle);
+  if (!id) return [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const entry = (db as Record<string, any>)[id];
+  const count = entry?.imageCount ?? 0;
+  return Array.from({ length: count }, (_, i) => `${CDN}/${id}/${i}.jpg`);
 }

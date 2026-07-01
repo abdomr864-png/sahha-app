@@ -70,7 +70,7 @@ export function ConfirmSheet({
     opacity: progress.value * 0.65,
   }));
 
-  const accent = tone === 'danger' ? '#F87171' : '#FF4D2E';
+  const accent = tone === 'danger' ? '#FF4D6D' : '#FF4D2E';
   const iconWrapClass =
     tone === 'danger'
       ? 'bg-danger/10 border border-danger/40'
@@ -110,11 +110,11 @@ export function ConfirmSheet({
               paddingBottom: insets.bottom + 16,
               paddingHorizontal: 20,
               paddingTop: 10,
-              backgroundColor: '#13131A',
+              backgroundColor: '#14141C',
               borderTopLeftRadius: 28,
               borderTopRightRadius: 28,
               borderTopWidth: 1,
-              borderColor: '#27272F',
+              borderColor: '#21212B',
               shadowColor: '#000',
               shadowOpacity: 0.5,
               shadowRadius: 24,

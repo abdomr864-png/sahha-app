@@ -6,6 +6,9 @@ export { mealParseSystemPrompt } from './meal-parse.ts';
 export { equipmentScanSystemPrompt } from './equipment-scan.ts';
 export { workoutGenSystemPrompt } from './workout-gen.ts';
 export { exerciseAltSystemPrompt } from './exercise-alternatives.ts';
+export { pantryScanSystemPrompt } from './pantry-scan.ts';
+export { mealSuggestionsSystemPrompt } from './meal-suggestions.ts';
+export type { SuggestionIngredient, SuggestionPromptOpts } from './meal-suggestions.ts';
 
 export function localeInstruction(locale: 'fr' | 'ar' | 'en'): string {
   switch (locale) {

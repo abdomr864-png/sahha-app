@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Pressable, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { useEntitlement } from '../hooks/useEntitlement';
 import type { Feature } from '../types';
@@ -19,9 +20,13 @@ interface Props {
 export function EntitlementGate({ feature, children, onUpgrade, fallback }: Props) {
   const { data, isPending } = useEntitlement(feature);
   const { t } = useTranslation();
+  const router = useRouter();
 
   if (isPending || !data || data.allowed) return <>{children}</>;
   if (fallback) return <>{fallback}</>;
+
+  // Default the upgrade action to the paywall so a gated user is never stuck.
+  const handleUpgrade = onUpgrade ?? (() => router.push('/paywall'));
 
   const message =
     data.reason === 'premium_only' ? t('premium.premiumOnly') : t('premium.limitReached');
@@ -31,7 +36,7 @@ export function EntitlementGate({ feature, children, onUpgrade, fallback }: Prop
       <Text className="text-ink text-base font-semibold mb-1">{message}</Text>
       <Pressable
         accessibilityRole="button"
-        onPress={onUpgrade}
+        onPress={handleUpgrade}
         className="bg-accent rounded-xl px-4 py-3 mt-3"
       >
         <Text className="text-ink text-center font-semibold">{t('premium.upgrade')}</Text>

@@ -173,7 +173,7 @@ export default function EditProfile() {
                 <Text className="text-white text-4xl font-extrabold">{initials}</Text>
               )}
               <View className="absolute bottom-0 right-0 w-9 h-9 rounded-full bg-bg-raised border border-border items-center justify-center">
-                <Icon name="camera" size={16} color="#F4F4F5" />
+                <Icon name="camera" size={16} color="#F4F4F7" />
               </View>
             </View>
           </Pressable>

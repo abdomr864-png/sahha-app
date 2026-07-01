@@ -1,9 +1,9 @@
-import { FlatList, Platform, Text, View } from 'react-native';
+import { FlatList, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ErrorMessage, Icon, Spinner } from '@features/shared';
 import { useWorkoutHistory } from '../hooks/useWorkoutHistory';
 
-const monoFamily = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' });
+const monoFamily = 'SpaceGrotesk_700Bold';
 
 export function HistoryView() {
   const { t } = useTranslation();
@@ -24,7 +24,7 @@ export function HistoryView() {
       ListEmptyComponent={
         <View className="items-center mt-16">
           <View className="w-16 h-16 rounded-2xl bg-bg-raised border border-border items-center justify-center mb-4">
-            <Icon name="history" size={26} color="#A1A1AA" />
+            <Icon name="history" size={26} color="#B4B4C2" />
           </View>
           <Text className="text-ink-subtle text-base text-center">{t('train.history.empty')}</Text>
         </View>
@@ -40,7 +40,7 @@ export function HistoryView() {
               <Text className="text-ink-muted text-[10px] font-bold tracking-widest">
                 {dateStr}
               </Text>
-              <Icon name="check-circle" size={14} color="#34D399" />
+              <Icon name="check-circle" size={14} color="#2EE6A6" />
             </View>
             <Text className="text-ink text-base font-bold mb-3">
               {item.name ?? t('train.history.untitled')}

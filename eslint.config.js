@@ -23,6 +23,7 @@ module.exports = [
       '.eslintrc.js',
       'supabase/functions/**',
       'lib/llm/openai-provider.ts',
+      'lib/llm/gemini-provider.ts',
     ],
   },
   js.configs.recommended,

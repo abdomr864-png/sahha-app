@@ -127,7 +127,7 @@ export default function Users() {
                   className="group border-b border-border/40 last:border-0 transition-colors hover:bg-accent/30"
                 >
                   <td className="px-3 py-2.5">
-                    <Link to={`/users/${u.id}`} className="flex items-center gap-2.5">
+                    <Link to={`/admin/users/${u.id}`} className="flex items-center gap-2.5">
                       <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/15 text-[11px] font-semibold text-primary">
                         {initials}
                       </div>

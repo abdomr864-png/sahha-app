@@ -1,4 +1,4 @@
-﻿import { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Tabs } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { installWorkoutOfflineRunner } from '@features/workouts';
@@ -22,7 +22,7 @@ export default function TabsLayout() {
       tabBar={(props) => <TabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        sceneStyle: { backgroundColor: '#0B0B0F' },
+        sceneStyle: { backgroundColor: '#0A0A0F' },
       }}
     >
       <Tabs.Screen name="index" options={{ title: t('tabs.home') }} />

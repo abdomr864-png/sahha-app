@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { router } from 'expo-router';
@@ -20,7 +19,7 @@ import Animated, {
 import { Header, Icon, Screen } from '@features/shared';
 import type { IconName } from '@features/shared';
 import { useHasProgram } from '@features/ai-program-adjust';
-import { useGenerateProgram } from '@features/ai-routine-gen';
+import { useDraftRoutineStore, useGenerateProgram } from '@features/ai-routine-gen';
 import { useProfile } from '@features/onboarding';
 import type { GenerateProgramRequest } from '@lib/llm';
 
@@ -38,15 +37,20 @@ export function ProgramGenWizard() {
   const { t } = useTranslation();
   const profile = useProfile();
   const hasProgram = useHasProgram();
+  const hasDraftProgram = useDraftRoutineStore((s) => s.draft?.kind === 'program');
   const { generate, loading, errorCode } = useGenerateProgram();
 
   const [weeks, setWeeks] = useState<Weeks>(8);
   const [preferences, setPreferences] = useState('');
 
-  // If a program already exists, bounce to home — this is a one-time quiz.
+  // Resolve where this entry point should land before showing the form:
+  //   • a committed program exists → home (the quiz is one-time)
+  //   • an uncommitted draft exists → its preview, so a generated-but-unsaved
+  //     program resurfaces instead of being silently regenerated/lost.
   useEffect(() => {
     if (hasProgram.data === true) router.replace('/(tabs)');
-  }, [hasProgram.data]);
+    else if (hasDraftProgram) router.replace('/routines/generate-program/preview');
+  }, [hasProgram.data, hasDraftProgram]);
 
   const params = useMemo(() => deriveParamsFromProfile(profile.data), [profile.data]);
 
@@ -143,7 +147,7 @@ export function ProgramGenWizard() {
                 'ai.program.notesPlaceholder',
                 'e.g. avoid deadlifts, prefer mornings, focus on shoulders',
               )}
-              placeholderTextColor="#71717A"
+              placeholderTextColor="#74748A"
               className="text-ink text-base"
               multiline
               style={{ minHeight: 76, textAlignVertical: 'top' }}
@@ -235,7 +239,7 @@ function ProfileCard({ params, loading }: { params: DerivedParams; loading: bool
           minHeight: 110,
           backgroundColor: '#17171B',
           borderWidth: 1,
-          borderColor: '#27272F',
+          borderColor: '#21212B',
         }}
       >
         <ShimmerLine width={120} />
@@ -324,7 +328,7 @@ function ShimmerLine({ width }: { width: number }) {
   }));
   return (
     <Animated.View
-      style={[style, { width, height: 12, borderRadius: 6, backgroundColor: '#27272F' }]}
+      style={[style, { width, height: 12, borderRadius: 6, backgroundColor: '#21212B' }]}
     />
   );
 }
@@ -359,7 +363,7 @@ function WeeksTile({
             paddingVertical: 16,
             alignItems: 'center',
             borderWidth: 1,
-            borderColor: active ? ACCENT : '#27272F',
+            borderColor: active ? ACCENT : '#21212B',
             backgroundColor: active ? 'rgba(249,115,22,0.10)' : '#17171B',
           },
         ]}
@@ -369,7 +373,7 @@ function WeeksTile({
           style={{
             fontSize: 28,
             lineHeight: 32,
-            color: active ? ACCENT : '#F4F4F5',
+            color: active ? ACCENT : '#F4F4F7',
           }}
         >
           {weeks}
@@ -754,7 +758,7 @@ function Dot({ active, done }: { active: boolean; done: boolean }) {
         {
           height: 6,
           borderRadius: 3,
-          backgroundColor: active || done ? ACCENT : '#27272F',
+          backgroundColor: active || done ? ACCENT : '#21212B',
         },
         style,
       ]}

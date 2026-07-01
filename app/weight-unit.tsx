@@ -56,7 +56,7 @@ export default function WeightUnit() {
                         active ? 'bg-accent' : 'bg-bg-subtle'
                       }`}
                     >
-                      <Icon name="scale" size={20} color={active ? '#FFFFFF' : '#F4F4F5'} />
+                      <Icon name="scale" size={20} color={active ? '#FFFFFF' : '#F4F4F7'} />
                     </View>
                     <View className="flex-1">
                       <Text className="text-ink text-base font-extrabold">{t(opt.labelKey)}</Text>

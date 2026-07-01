@@ -52,7 +52,7 @@ export function SocialAuthButtons({ onApple, onGoogle, loading = null, disabled 
                 justifyContent: 'center',
               }}
             >
-              <ActivityIndicator color="#0B0B0F" />
+              <ActivityIndicator color="#0A0A0F" />
             </View>
           ) : null}
         </View>
@@ -76,13 +76,13 @@ export function SocialAuthButtons({ onApple, onGoogle, loading = null, disabled 
           }}
         >
           {loading === 'google' ? (
-            <ActivityIndicator color="#0B0B0F" />
+            <ActivityIndicator color="#0A0A0F" />
           ) : (
             <>
               <GoogleGlyph />
               <Text
                 style={{
-                  color: '#0B0B0F',
+                  color: '#0A0A0F',
                   fontSize: 15,
                   fontWeight: '600',
                   marginLeft: 10,
@@ -105,11 +105,11 @@ export function SocialAuthDivider() {
   if (Platform.OS !== 'ios' && !isGoogleSigninAvailable()) return null;
   return (
     <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 18 }}>
-      <View style={{ flex: 1, height: 1, backgroundColor: '#27272F' }} />
-      <Text style={{ color: '#A1A1AA', fontSize: 12, marginHorizontal: 12 }}>
+      <View style={{ flex: 1, height: 1, backgroundColor: '#21212B' }} />
+      <Text style={{ color: '#B4B4C2', fontSize: 12, marginHorizontal: 12 }}>
         {t('auth.social.or')}
       </Text>
-      <View style={{ flex: 1, height: 1, backgroundColor: '#27272F' }} />
+      <View style={{ flex: 1, height: 1, backgroundColor: '#21212B' }} />
     </View>
   );
 }

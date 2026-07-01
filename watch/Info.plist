@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Info.plist for the Sahha Apple Watch companion (modern single-target watchOS
+  SwiftUI app). The config plugin (plugins/withAppleWatch.js) sets
+  WKCompanionAppBundleIdentifier to match the phone bundle id and keeps the
+  HealthKit usage strings in sync with the phone app.
+-->
+<plist version="1.0">
+<dict>
+  <key>CFBundleName</key>
+  <string>$(PRODUCT_NAME)</string>
+  <key>CFBundleDisplayName</key>
+  <string>Sahha</string>
+  <key>CFBundleIdentifier</key>
+  <string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+  <key>CFBundleVersion</key>
+  <string>$(CURRENT_PROJECT_VERSION)</string>
+  <key>CFBundleShortVersionString</key>
+  <string>$(MARKETING_VERSION)</string>
+  <key>CFBundlePackageType</key>
+  <string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
+
+  <!-- Modern single-target watchOS app + companion link to the iPhone app. -->
+  <key>WKApplication</key>
+  <true/>
+  <key>WKCompanionAppBundleIdentifier</key>
+  <string>com.sahha.app</string>
+
+  <!-- HealthKit workout session needs to keep running in the background. -->
+  <key>UIBackgroundModes</key>
+  <array>
+    <string>workout-processing</string>
+  </array>
+
+  <key>NSHealthShareUsageDescription</key>
+  <string>Sahha reads your heart rate during a workout so you can see it on your wrist.</string>
+  <key>NSHealthUpdateUsageDescription</key>
+  <string>Sahha records your workout to Apple Health so it counts toward your Activity rings.</string>
+</dict>
+</plist>

@@ -123,13 +123,24 @@ function parseStructured<T>(
   res: any,
   opts: { schema: { parse: (raw: unknown) => T } },
 ): LLMStructuredResult<T> {
-  const text: string = res?.choices?.[0]?.message?.content ?? '';
+  const choice = res?.choices?.[0];
+  const finishReason: string | undefined = choice?.finish_reason;
+  const text: string = choice?.message?.content ?? '';
   if (!text) throw new Error('provider returned empty response');
+  // `length` means the model hit max_tokens before closing the JSON — the body
+  // is valid-looking but truncated, so JSON.parse will fail with a confusing
+  // error. Surface it explicitly so callers can raise the cap / classify it.
+  if (finishReason === 'length') {
+    throw new Error(
+      `provider response truncated at max_tokens (${text.length} chars) — increase maxOutputTokens`,
+    );
+  }
   let raw: unknown;
   try {
     raw = JSON.parse(text);
   } catch {
-    throw new Error('provider returned non-JSON response');
+    const snippet = text.slice(0, 200).replace(/\s+/g, ' ');
+    throw new Error(`provider returned non-JSON response (len=${text.length}): ${snippet}`);
   }
   const data = opts.schema.parse(raw);
   return {

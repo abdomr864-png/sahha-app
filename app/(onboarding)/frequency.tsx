@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Platform, Pressable, Text } from 'react-native';
+import { Pressable, Text } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -7,7 +7,7 @@ import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 import { OnboardingFooter, OnboardingHeader, OnboardingHero, Screen } from '@features/shared';
 import { useOnboardingStore } from '@features/onboarding';
 
-const monoFamily = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' });
+const monoFamily = 'SpaceGrotesk_700Bold';
 
 const SUBTITLES: Record<number, string> = {
   2: 'Light & sustainable',

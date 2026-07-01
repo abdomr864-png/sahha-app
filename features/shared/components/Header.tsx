@@ -27,7 +27,7 @@ export function Header({ title, subtitle, showBack, right, onBack }: Props) {
         ) : null}
         <View className="flex-1">
           {title ? (
-            <Text className="text-ink text-2xl font-extrabold tracking-tight">{title}</Text>
+            <Text className="text-ink text-2xl font-display tracking-tight">{title}</Text>
           ) : null}
           {subtitle ? <Text className="text-ink-subtle text-sm mt-0.5">{subtitle}</Text> : null}
         </View>

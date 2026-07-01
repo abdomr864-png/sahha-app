@@ -14,7 +14,7 @@ export function BrandMark({ size = 64 }: Props) {
         borderRadius: size / 4,
         backgroundColor: '#FFFFFF',
         borderWidth: 1,
-        borderColor: '#27272F',
+        borderColor: '#21212B',
         alignItems: 'center',
         justifyContent: 'center',
         shadowColor: '#FF4D2E',
@@ -27,7 +27,7 @@ export function BrandMark({ size = 64 }: Props) {
       <Svg width={size * 0.55} height={size * 0.55} viewBox="0 0 32 32" fill="none">
         <Defs>
           <LinearGradient id="g" x1="0" y1="0" x2="32" y2="32" gradientUnits="userSpaceOnUse">
-            <Stop offset="0" stopColor="#FF7A4D" />
+            <Stop offset="0" stopColor="#FF8A2B" />
             <Stop offset="1" stopColor="#FF4D2E" />
           </LinearGradient>
         </Defs>

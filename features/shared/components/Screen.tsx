@@ -33,7 +33,7 @@ export function Screen({
       {glow ? (
         <>
           <Glow color="#FF4D2E" size={300} opacity={0.14} top={-100} right={-80} />
-          <Glow color="#7C3AED" size={260} opacity={0.08} bottom={-100} left={-80} />
+          <Glow color="#A855F7" size={260} opacity={0.08} bottom={-100} left={-80} />
         </>
       ) : null}
       {scroll ? (

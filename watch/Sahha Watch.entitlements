@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- HealthKit entitlement for the watch target (workout session + heart rate). -->
+<plist version="1.0">
+<dict>
+  <key>com.apple.developer.healthkit</key>
+  <true/>
+  <key>com.apple.developer.healthkit.access</key>
+  <array/>
+</dict>
+</plist>

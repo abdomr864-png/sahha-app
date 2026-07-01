@@ -52,7 +52,7 @@ export default function Welcome() {
           width: 320,
           height: 320,
           borderRadius: 320,
-          backgroundColor: '#7C3AED',
+          backgroundColor: '#A855F7',
           opacity: 0.12,
         }}
       />
@@ -69,7 +69,7 @@ export default function Welcome() {
               Built for lifters
             </Text>
           </View>
-          <Text className="text-ink text-4xl font-extrabold leading-tight mb-3 tracking-tight">
+          <Text className="text-ink text-4xl font-display leading-tight mb-3 tracking-tight">
             {t('auth.welcome.title')}
           </Text>
           <Text className="text-ink-subtle text-base leading-6 mb-10">

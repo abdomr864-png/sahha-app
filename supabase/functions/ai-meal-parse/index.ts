@@ -11,7 +11,6 @@ import {
   type MealUserContext,
 } from '../../../lib/llm/prompts/meal-parse.ts';
 import { MODELS } from '../../../lib/llm/models.ts';
-import { z } from 'zod';
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0';
 
 function createAdminClient() {
@@ -22,41 +21,12 @@ function createAdminClient() {
 
 const FEATURE = 'ai_meal_parse';
 const TEXT_MODEL = MODELS.mealParse;
-const VISION_MODEL = MODELS.formCheck; // gpt-4o supports vision
-const FOOD_CHECK_MODEL = 'gpt-4o'; // full vision model — mini was unreliable on borderline images
-
-const FoodCheckSchema = z.object({
-  what_i_see: z.string().max(200),
-  is_food_or_drink: z.boolean(),
-  confidence: z.enum(['high', 'medium', 'low']),
-});
-
-const FOOD_CHECK_PROMPT = `You are a strict image classifier. Look at the image and return JSON with three fields.
-
-1. "what_i_see": one short sentence describing literally what is in the image (e.g. "a brown tabby cat on a sofa", "a plate of pasta with tomato sauce", "an empty white ceramic plate", "a screenshot of a chat app").
-
-2. "is_food_or_drink": true if the image clearly and primarily shows ANY real, edible food or drink item — cooked or raw, single item or full meal. Examples that are TRUE:
-   - cooked dish on a plate (pasta, salad, steak, etc.)
-   - sandwich, burger, pizza, taco, sushi, wrap
-   - any whole fruit (banana, apple, orange, mango, etc.) or cut fruit
-   - any vegetable ready to eat (carrot, cucumber, salad greens)
-   - packaged snack (chips, candy bar, granola bar)
-   - drink in any vessel (coffee, water, juice, soda, smoothie, milk)
-   - bread, pastry, dessert, ice cream, yogurt
-   - restaurant dish, takeout container
-   - food in packaging that's clearly meant to be eaten now
-
-   Set to FALSE only when:
-   - empty plate, empty bowl, empty cup, empty glass, completely empty table
-   - a person, face, body part, hand alone (no food in frame), pet, animal
-   - landscape, room, building, vehicle, sky, ground, wall, scenery
-   - screenshot, document, text, logo, app interface, meme, drawing, illustration
-   - any non-food object (phone, book, tool, clothing, decoration, plant alive in pot)
-   - a blank, black, white, fully blurry, or unreadable image
-
-3. "confidence": "high" if you can clearly identify food/drink in the frame OR clearly identify it as not-food. "medium" if there is food but partly obscured. "low" only when the image is genuinely ambiguous (extreme blur, dark, weird angle).
-
-A whole banana, apple, single fruit, or any single food item DOES count as food — do NOT reject these as "groceries". Reject only obvious non-food.`;
+// gpt-4o-mini is multimodal and handles meal photos. We previously ran a
+// separate gpt-4o "food check" pre-flight, but it was fail-closed (any API
+// error → "no food") and many accounts lack gpt-4o access, so real meals were
+// being rejected. The main analysis below already refuses non-food via its
+// STEP-1 prompt + the post-call guard, so the pre-flight is unnecessary.
+const VISION_MODEL = MODELS.mealVision;
 
 // Mifflin-St Jeor + activity + goal — rough kcal target if profile has the inputs.
 function estimateKcalTarget(p: {
@@ -148,129 +118,6 @@ Deno.serve(async (req: Request) => {
   const isImage = !!parsed.image_url;
   const provider = getOpenAI();
 
-  // Pre-flight: classifier rejects non-food photos before we pay for the full analysis.
-  // FAIL-CLOSED: any error here is treated as "not food". Earlier fail-open behavior
-  // let images through whenever the classifier crashed, which the main analysis then
-  // hallucinated macros for.
-  if (isImage) {
-    let foodCheckPassed = false;
-    let foodCheckUsage = { inputTokens: 0, outputTokens: 0 };
-    try {
-      const check = await provider.generateVision(
-        [
-          { role: 'system' as const, content: FOOD_CHECK_PROMPT },
-          { role: 'user' as const, content: 'Classify this image.' },
-        ],
-        {
-          model: FOOD_CHECK_MODEL,
-          schema: FoodCheckSchema,
-          schemaName: 'FoodCheck',
-          maxOutputTokens: 200,
-          imageUrls: [parsed.image_url!],
-          temperature: 0,
-        },
-      );
-      console.log('[ai-meal-parse] food check:', JSON.stringify(check.data));
-      foodCheckUsage = check.usage;
-
-      // Ultra-strict: require explicit true + HIGH confidence + description must
-      // not mention common non-food objects (belt-and-suspenders against model
-      // mistakes on edge cases like screens, hands, packaging, etc.)
-      const desc = (check.data.what_i_see ?? '').toLowerCase();
-      // Keyword filter — pruned to avoid false positives on common foods:
-      // - "plant" removed (eggplant, plant-based food)
-      // - "flower" removed (cauliflower)
-      // - "apple" not added (the fruit, obviously)
-      // - generic "food/drink" words avoided
-      const NON_FOOD_KEYWORDS = [
-        'computer',
-        'laptop',
-        'desktop pc',
-        'monitor',
-        'screen',
-        'display',
-        'keyboard',
-        'mouse pad',
-        'smartphone',
-        'tablet',
-        ' tv ',
-        'television',
-        'document',
-        'paper sheet',
-        ' book',
-        'magazine',
-        'newspaper',
-        'screenshot',
-        ' logo',
-        'app interface',
-        'website',
-        'webpage',
-        ' person',
-        'people',
-        ' face ',
-        ' man ',
-        'woman ',
-        'child ',
-        'baby',
-        ' cat ',
-        ' dog ',
-        ' pet ',
-        'wild animal',
-        ' bird ',
-        ' car ',
-        'vehicle',
-        'building',
-        'house',
-        'room interior',
-        ' wall',
-        ' floor',
-        'sofa',
-        ' bed ',
-        'desk',
-        ' tree ',
-        ' sky ',
-        'landscape',
-        'scenery',
-        'empty plate',
-        'empty bowl',
-        'empty cup',
-        'empty glass',
-        'empty table',
-        'blank image',
-        'black image',
-        'white image',
-        'blurry image',
-        'meme',
-        'cartoon',
-        'illustration drawing',
-      ];
-      const mentionsNonFood = NON_FOOD_KEYWORDS.some((kw) => desc.includes(kw));
-
-      foodCheckPassed =
-        check.data.is_food_or_drink === true && check.data.confidence !== 'low' && !mentionsNonFood;
-
-      if (mentionsNonFood) {
-        console.log('[ai-meal-parse] rejecting: description mentions non-food object');
-      }
-    } catch (e) {
-      console.error('[ai-meal-parse] food check failed:', (e as Error).message);
-      foodCheckPassed = false;
-    }
-
-    if (!foodCheckPassed) {
-      await logAICall(admin, {
-        userId,
-        feature: FEATURE,
-        model: FOOD_CHECK_MODEL,
-        inputTokens: foodCheckUsage.inputTokens,
-        outputTokens: foodCheckUsage.outputTokens,
-        status: 'error',
-        errorCode: 'no_food_detected',
-      });
-      return json(422, { error: 'no_food_detected' });
-    }
-  }
-
   const systemPrompt = mealParseSystemPrompt(parsed.locale, {
     mode: isImage ? 'image' : 'text',
     user: userCtx,
@@ -283,30 +130,42 @@ Deno.serve(async (req: Request) => {
 
   const model = isImage ? VISION_MODEL : TEXT_MODEL;
 
+  // The per-ingredient breakdown can be long (a single plate → many rows, each
+  // with macros + localized name/detail). Give the model enough headroom so the
+  // JSON isn't truncated mid-object — a truncated response fails to parse and
+  // surfaces as a generic "provider_error" to the user.
+  const MAX_OUTPUT_TOKENS = 8000;
+
   const callOnce = async () =>
     isImage
       ? provider.generateVision(messages, {
           model,
           schema: MealMacrosSchema,
           schemaName: 'MealMacros',
-          maxOutputTokens: 3500,
+          maxOutputTokens: MAX_OUTPUT_TOKENS,
           imageUrls: [parsed.image_url!],
         })
       : provider.generateStructured(messages, {
           model,
           schema: MealMacrosSchema,
           schemaName: 'MealMacros',
-          maxOutputTokens: 3500,
+          maxOutputTokens: MAX_OUTPUT_TOKENS,
         });
 
   let result;
   try {
     result = await callOnce();
-  } catch {
+  } catch (firstErr) {
+    console.error(
+      '[ai-meal-parse] provider call failed (attempt 1):',
+      (firstErr as Error)?.message,
+    );
     try {
       result = await callOnce();
     } catch (e) {
-      const code = (e as Error).message?.includes('parse') ? 'invalid_response' : 'provider_error';
+      const msg = (e as Error)?.message ?? String(e);
+      console.error('[ai-meal-parse] provider call failed (attempt 2):', msg, e);
+      const code = /truncat|parse|json|empty/i.test(msg) ? 'invalid_response' : 'provider_error';
       await logAICall(admin, {
         userId,
         feature: FEATURE,
@@ -321,12 +180,16 @@ Deno.serve(async (req: Request) => {
   }
 
   // Reject obviously-not-a-meal photos rather than returning fabricated macros.
-  // Cheap heuristic: model flag, OR an empty/all-zero result that slipped through.
+  // Primary signal is the model's explicit `no_food_detected` flag. The all-zero
+  // heuristic is a secondary backstop and only fires when the response is fully
+  // empty (no items AND zero totals) — a partial response with items but a
+  // forgotten total should still surface to the user, not be rejected as "no food".
   const isImageMode = isImage;
   const totals = result.data.total;
   const totalIsZero = !totals.calories && !totals.protein_g && !totals.carbs_g && !totals.fat_g;
   const noItems = !result.data.items || result.data.items.length === 0;
-  if (isImageMode && (result.data.no_food_detected === true || noItems || totalIsZero)) {
+  const emptyResult = noItems && totalIsZero;
+  if (isImageMode && (result.data.no_food_detected === true || emptyResult)) {
     await logAICall(admin, {
       userId,
       feature: FEATURE,

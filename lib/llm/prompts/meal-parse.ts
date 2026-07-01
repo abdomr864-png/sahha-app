@@ -39,29 +39,25 @@ export function mealParseSystemPrompt(
     opts.mode === 'image'
       ? `\nINPUT MODE: IMAGE.
 
-STEP 1 — FOOD CHECK (DO THIS FIRST, BEFORE ANYTHING ELSE):
-Look at the image and ask: "Is there at least one clearly identifiable, ready-to-eat food or drink item in this photo?"
+STEP 1 — FOOD CHECK (DO THIS FIRST):
+Decide whether the photo contains at least one food or drink item. This includes cooked meals, plated dishes, packaged or fast food, snacks, fruit/produce, desserts, and any beverage. Food that is partially visible, photographed at an angle, in dim or uneven lighting, slightly blurry, or hard to name still counts as food.
 
-If the answer is NO — for ANY reason, including but not limited to:
-  • empty plate, empty bowl, empty cup, empty table
-  • a person, face, body part (hand alone with no food doesn't count), pet, animal
-  • landscape, building, room, furniture, vehicle, sky, ground
-  • a screenshot, document, text, logo, app interface, meme, drawing
-  • a blank/black/white/blurry/unreadable image
-  • raw uncooked ingredients sitting on a counter (not a prepared meal)
-  • any object that is not food (phone, book, tool, clothing, etc.)
-  • you are even slightly unsure whether it's food
-
-…then you MUST output EXACTLY this and STOP — do NOT fabricate items, do NOT guess, do NOT use the example below as a template:
+Output the refusal object below ONLY when the photo CLEARLY contains NO food or drink at all — for example:
+  • an empty plate, bowl, cup, or table
+  • a person, pet, or animal with no food present
+  • a landscape, building, room, furniture, or vehicle
+  • a screenshot, document, app interface, logo, or drawing
+  • a fully blank, black, or unreadable image
+Refusal object (output it EXACTLY and STOP — do NOT use the example meal below as a template):
 {
   "no_food_detected": true,
   "items": [],
   "total": { "calories": 0, "protein_g": 0, "carbs_g": 0, "fat_g": 0 }
 }
 
-DO NOT invent food because the user "probably meant" to take a meal photo. Refusing is correct. Hallucinating a meal is a critical failure.
+Otherwise, if ANY food or drink is visible, proceed to STEP 2 and analyze it. Do NOT refuse just because the image is imperfect or you are unsure of the exact dish — make your best estimate and lower the per-item "confidence" instead. Only fabricate nothing: estimate what you can actually see.
 
-STEP 2 — Only if STEP 1 found real food: Identify every visible food item; estimate portion sizes from visual cues (plate size, utensils, hand). If multiple meals are visible, only describe the foreground meal. Set "no_food_detected": false.`
+STEP 2 — Identify every visible food item; estimate portion sizes from visual cues (plate size, utensils, hand). If multiple meals are visible, only describe the foreground meal. Set "no_food_detected": false.`
       : `\nINPUT MODE: TEXT. The user describes their meal in plain text. Set "no_food_detected": false.`;
 
   return `You are a precise nutrition assistant. Identify foods and return structured macro estimates AND a personalized assessment.

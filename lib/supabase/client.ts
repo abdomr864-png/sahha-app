@@ -1,4 +1,5 @@
 import 'react-native-url-polyfill/auto';
+import { AppState, Platform } from 'react-native';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import Constants from 'expo-constants';
 import { SupabaseSecureStorage } from './storage';
@@ -31,6 +32,21 @@ export const supabase: SupabaseClient<Database> = createClient<Database>(url, an
     headers: { 'x-client': 'sahha-mobile' },
   },
 });
+
+// Drive token auto-refresh off foreground state (Supabase's recommended RN
+// setup). `autoRefreshToken` only runs its timer while started; tie it to the
+// app being active so a long-foregrounded session refreshes its access token
+// before it expires instead of silently lapsing. getSession() on next launch
+// still restores + refreshes from the persisted (chunked) session regardless.
+if (Platform.OS !== 'web') {
+  AppState.addEventListener('change', (state) => {
+    if (state === 'active') {
+      void supabase.auth.startAutoRefresh();
+    } else {
+      void supabase.auth.stopAutoRefresh();
+    }
+  });
+}
 
 export type Tables = Database['public']['Tables'];
 export type Row<K extends keyof Tables> = Tables[K]['Row'];

@@ -45,7 +45,7 @@ export function OnboardingHeader({ step, total, showBack = true }: Props) {
             <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
               <Path
                 d="M15 6l-6 6 6 6"
-                stroke="#F4F4F5"
+                stroke="#F4F4F7"
                 strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"

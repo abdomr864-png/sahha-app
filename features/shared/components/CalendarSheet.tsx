@@ -1,4 +1,3 @@
-/* eslint-disable max-lines -- Self-contained calendar sheet: header, grid, legend, animation. */
 import { useEffect, useMemo, useState } from 'react';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
@@ -145,11 +144,11 @@ export function CalendarSheet({ visible, onClose, getDayCompletion, onSelectDay 
               paddingBottom: insets.bottom + 16,
               paddingHorizontal: 18,
               paddingTop: 10,
-              backgroundColor: '#13131A',
+              backgroundColor: '#14141C',
               borderTopLeftRadius: 32,
               borderTopRightRadius: 32,
               borderTopWidth: 1,
-              borderColor: '#27272F',
+              borderColor: '#21212B',
               shadowColor: '#000',
               shadowOpacity: 0.55,
               shadowRadius: 28,
@@ -165,7 +164,7 @@ export function CalendarSheet({ visible, onClose, getDayCompletion, onSelectDay 
           <View className="flex-row items-center justify-between mb-4">
             <View className="flex-row items-center" style={{ gap: 10 }}>
               <View className="w-9 h-9 rounded-2xl items-center justify-center bg-bg-raised border border-border">
-                <Icon name="calendar" size={16} color="#F4F4F5" />
+                <Icon name="calendar" size={16} color="#F4F4F7" />
               </View>
               <View>
                 <Text className="text-ink-muted text-[10px] font-extrabold uppercase tracking-[1.5px]">
@@ -232,7 +231,7 @@ export function CalendarSheet({ visible, onClose, getDayCompletion, onSelectDay 
           <View className="flex-row items-center justify-center mt-4" style={{ gap: 14 }}>
             <Legend dotColor="#22C55E" label="Online" />
             <Legend dotColor="#F59E0B" label="Partial" />
-            <Legend dotColor="#27272F" label="Off" />
+            <Legend dotColor="#21212B" label="Off" />
           </View>
         </Animated.View>
       </View>
@@ -274,13 +273,13 @@ function NavBtn({
             justifyContent: 'center',
             backgroundColor: '#1B1B22',
             borderWidth: 1,
-            borderColor: '#27272F',
+            borderColor: '#21212B',
             opacity: disabled ? 0.35 : 1,
           },
           style,
         ]}
       >
-        <Icon name={icon} size={14} color="#F4F4F5" />
+        <Icon name={icon} size={14} color="#F4F4F7" />
       </Animated.View>
     </Pressable>
   );
@@ -388,7 +387,7 @@ function DayCell({
               borderRadius: 20,
               alignItems: 'center',
               justifyContent: 'center',
-              backgroundColor: isToday ? '#27272F' : 'transparent',
+              backgroundColor: isToday ? '#21212B' : 'transparent',
             },
             cellStyle,
           ]}
@@ -423,7 +422,7 @@ function DayRing({
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const pct = Math.max(0, Math.min(1, value));
-  const trackColor = active ? '#3F3F46' : '#27272F';
+  const trackColor = active ? '#34343F' : '#21212B';
   const ringColor = pct >= 1 ? '#22C55E' : pct > 0 ? '#F59E0B' : 'transparent';
   return (
     <View

@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 // Client-side AI HTTP client. Calls Supabase Edge Functions. Never imports
 // the OpenAI SDK or anything provider-specific. All errors come back as
 // stable AILErrorCode strings — UI maps to i18n keys.
@@ -19,10 +18,18 @@ import type {
   GeneratedWorkout,
   ExerciseAlternativesRequest,
   ExerciseAlternativesResponse,
+  PantryScanRequest,
+  PantryScanResponse,
+  MealSuggestionsRequest,
+  MealSuggestionsResponse,
   Locale,
 } from './types';
 
 export class AIError extends Error {
+  // Provider-level message (e.g. "You exceeded your current quota"). Set by
+  // the SSE parser when the backend includes it. Useful for diagnostics.
+  public detail?: string;
+
   constructor(
     public readonly code: AILErrorCode,
     public readonly status?: number,
@@ -132,13 +139,17 @@ async function streamChat(req: ChatRequest, h: ChatStreamHandlers): Promise<void
   }
   if (!res.ok || !res.body) {
     let code: AILErrorCode = 'provider_error';
+    let detail: string | undefined;
     try {
-      const err = (await res.json()) as { error?: AILErrorCode };
+      const err = (await res.json()) as { error?: AILErrorCode; detail?: string };
       if (err?.error) code = err.error;
+      if (err?.detail) detail = err.detail;
     } catch {
       /* keep default */
     }
-    h.onError?.(new AIError(code, res.status));
+    const aiErr = new AIError(code, res.status);
+    if (detail) aiErr.detail = detail;
+    h.onError?.(aiErr);
     return;
   }
 
@@ -165,10 +176,14 @@ async function streamChat(req: ChatRequest, h: ChatStreamHandlers): Promise<void
           const evt = JSON.parse(data) as
             | { type: 'conversation'; id: string }
             | { type: 'token'; delta: string }
-            | { type: 'error'; code: AILErrorCode };
+            | { type: 'error'; code: AILErrorCode; detail?: string };
           if (evt.type === 'conversation') h.onConversation?.(evt.id);
           else if (evt.type === 'token') h.onToken(evt.delta);
-          else if (evt.type === 'error') h.onError?.(new AIError(evt.code));
+          else if (evt.type === 'error') {
+            const err = new AIError(evt.code);
+            if (evt.detail) err.detail = evt.detail;
+            h.onError?.(err);
+          }
         } catch {
           /* ignore malformed event */
         }
@@ -707,6 +722,17 @@ function stubFormCheck(): {
   };
 }
 
+// Offline / LLM-disabled fallbacks for "What can I eat?". Both the scan and the
+// suggestions need the food DB + vision, so offline we return empty results and
+// let the UI show its "needs connection to scan" / graceful no-match states.
+function stubScanPantry(): PantryScanResponse {
+  return { items: [] };
+}
+
+function stubSuggestMeals(): MealSuggestionsResponse {
+  return { suggestions: [], best_is_weak: true };
+}
+
 async function stubStreamChat(req: ChatRequest, h: ChatStreamHandlers): Promise<void> {
   h.onConversation?.(req.conversation_id ?? `stub-${Date.now()}`);
   const reply =
@@ -776,5 +802,15 @@ export const aiClient = {
   formCheck: async (req: FormCheckRequest) => {
     if (!isLLMEnabled()) return stubFormCheck();
     return postJson<{ form_check_id: string; feedback: FormFeedback }>('ai-form-check', req);
+  },
+  // "What can I eat?" — pantry photo(s) -> mapped ingredients.
+  scanPantry: async (req: PantryScanRequest): Promise<PantryScanResponse> => {
+    if (!isLLMEnabled()) return stubScanPantry();
+    return postJson<PantryScanResponse>('pantry-scan', req, { timeoutMs: 30_000 });
+  },
+  // Confirmed ingredients + remaining macros -> ranked, code-scored suggestions.
+  suggestMeals: async (req: MealSuggestionsRequest): Promise<MealSuggestionsResponse> => {
+    if (!isLLMEnabled()) return stubSuggestMeals();
+    return postJson<MealSuggestionsResponse>('meal-suggestions', req, { timeoutMs: 30_000 });
   },
 };

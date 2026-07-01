@@ -59,7 +59,7 @@ export default function CreatePost() {
           value={content}
           onChangeText={setContent}
           placeholder={t('createPost.placeholder')}
-          placeholderTextColor="#A1A1AA"
+          placeholderTextColor="#B4B4C2"
           multiline
           maxLength={2000}
           className="text-ink text-base bg-bg-raised border border-border rounded-2xl p-4 min-h-[140px]"

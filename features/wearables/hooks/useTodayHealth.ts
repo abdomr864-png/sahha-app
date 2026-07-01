@@ -6,6 +6,7 @@ export type TodayHealth = {
   workoutsCount: number;
   workoutsMinutes: number;
   workoutsDistanceM: number;
+  workoutsVolumeKg: number;
   restingHr: number | null;
   hrv: number | null;
   sleepMinutes: number | null;
@@ -46,6 +47,7 @@ export function useTodayHealth() {
         workoutsCount: 0,
         workoutsMinutes: 0,
         workoutsDistanceM: 0,
+        workoutsVolumeKg: 0,
         restingHr: null,
         hrv: null,
         sleepMinutes: null,
@@ -68,22 +70,50 @@ export function useTodayHealth() {
         ),
       );
 
+      // Wearable-synced workouts (runs, rides, etc. from a watch).
       const wkRes = await supabase
         .from('workouts_synced')
         .select('duration_minutes,distance_meters')
         .eq('user_id', userId)
         .gte('started_at', start)
         .lte('started_at', end);
-      const workouts = wkRes.data ?? [];
-      const workoutsCount = workouts.length;
-      const workoutsMinutes = workouts.reduce(
+      const syncedWorkouts = wkRes.data ?? [];
+      const syncedCount = syncedWorkouts.length;
+      const syncedMinutes = syncedWorkouts.reduce(
         (s: number, r: { duration_minutes: number | null }) => s + Number(r.duration_minutes ?? 0),
         0,
       );
-      const workoutsDistanceM = workouts.reduce(
+      const workoutsDistanceM = syncedWorkouts.reduce(
         (s: number, r: { distance_meters: number | null }) => s + Number(r.distance_meters ?? 0),
         0,
       );
+
+      // In-app logged workouts (the gym sessions the app records itself). These
+      // need no wearable — active minutes come from the session's own start/end
+      // timestamps and volume from the logged sets, so they're exact.
+      const loggedRes = await supabase
+        .from('workouts')
+        .select('started_at,ended_at,total_volume_kg')
+        .eq('user_id', userId)
+        .gte('started_at', start)
+        .lte('started_at', end);
+      const logged = (loggedRes.data ?? []) as {
+        started_at: string;
+        ended_at: string | null;
+        total_volume_kg: number | null;
+      }[];
+      let loggedMinutes = 0;
+      let workoutsVolumeKg = 0;
+      for (const w of logged) {
+        if (w.ended_at) {
+          const ms = new Date(w.ended_at).getTime() - new Date(w.started_at).getTime();
+          if (Number.isFinite(ms) && ms > 0) loggedMinutes += ms / 60000;
+        }
+        workoutsVolumeKg += Number(w.total_volume_kg ?? 0);
+      }
+
+      const workoutsCount = syncedCount + logged.length;
+      const workoutsMinutes = syncedMinutes + loggedMinutes;
 
       const sinceISO = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000).toISOString();
       const latestMetric = async (type: string) => {
@@ -99,11 +129,24 @@ export function useTodayHealth() {
         return data ? Number((data as { value: number }).value) : null;
       };
 
-      const [restingHr, hrv, weightKg] = await Promise.all([
+      const [restingHr, hrv, wearableWeight] = await Promise.all([
         latestMetric('resting_heart_rate'),
         latestMetric('hrv'),
         latestMetric('weight'),
       ]);
+
+      // Weight: prefer a recent wearable/scale sample; otherwise fall back to the
+      // weight the user entered in onboarding/profile so the card isn't blank.
+      let weightKg = wearableWeight;
+      if (weightKg == null) {
+        const { data: prof } = await supabase
+          .from('profiles')
+          .select('weight_kg')
+          .eq('user_id', userId)
+          .maybeSingle();
+        const w = (prof as { weight_kg: number | null } | null)?.weight_kg;
+        weightKg = w != null ? Number(w) : null;
+      }
 
       const sleepSinceISO = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
       const sleepRes = await supabase
@@ -129,6 +172,7 @@ export function useTodayHealth() {
         workoutsCount,
         workoutsMinutes: Math.round(workoutsMinutes),
         workoutsDistanceM: Math.round(workoutsDistanceM),
+        workoutsVolumeKg: Math.round(workoutsVolumeKg),
         restingHr: restingHr != null ? Math.round(restingHr) : null,
         hrv: hrv != null ? Math.round(hrv) : null,
         sleepMinutes,

@@ -27,7 +27,8 @@
     "accept": "Accepter",
     "reject": "Rejeter",
     "ok": "OK",
-    "go": "GO"
+    "go": "GO",
+    "dismiss": "Ignorer"
   },
   "errors": {
     "network": "Vous semblez hors ligne. Les modifications se synchroniseront au retour.",
@@ -48,12 +49,12 @@
       "entitlement_required": "Fonctionnalité premium.",
       "invalid_request": "Cette requête contenait une erreur.",
       "invalid_input": "Entrée non comprise.",
-      "invalid_response": "L'IA a renvoyé une réponse inattendue. Veuillez réessayer.",
+      "invalid_response": "La réponse n'est pas arrivée comme prévu. Veuillez réessayer.",
       "insufficient_data": "Pas assez d'entraînements récents pour suggérer des changements.",
       "invalid_video": "URL vidéo invalide ou non autorisée.",
       "unsafe_content": "Le contenu a été signalé comme dangereux.",
       "no_food_detected": "Aucun aliment détecté sur la photo. Essayez une photo plus claire de votre repas.",
-      "provider_error": "Le service IA rencontre un problème. Réessayez."
+      "provider_error": "Impossible de terminer. Veuillez réessayer."
     }
   },
   "auth": {
@@ -157,11 +158,26 @@
     "activityLevel": {
       "title": "Quelle est votre activité hors entraînement ?",
       "subtitle": "Activité quotidienne — bureau, marche, enfants, etc.",
-      "sedentary": { "label": "Sédentaire", "desc": "Surtout assis, peu de marche" },
-      "light": { "label": "Légèrement actif", "desc": "Un peu de marche, tâches légères" },
-      "moderate": { "label": "Modérément actif", "desc": "Debout, mouvement régulier" },
-      "very": { "label": "Très actif", "desc": "Métier physique ou sport quotidien" },
-      "extra": { "label": "Extrêmement actif", "desc": "Athlète ou travail manuel intense" }
+      "sedentary": {
+        "label": "Sédentaire",
+        "desc": "Surtout assis, peu de marche"
+      },
+      "light": {
+        "label": "Légèrement actif",
+        "desc": "Un peu de marche, tâches légères"
+      },
+      "moderate": {
+        "label": "Modérément actif",
+        "desc": "Debout, mouvement régulier"
+      },
+      "very": {
+        "label": "Très actif",
+        "desc": "Métier physique ou sport quotidien"
+      },
+      "extra": {
+        "label": "Extrêmement actif",
+        "desc": "Athlète ou travail manuel intense"
+      }
     },
     "targetWeight": {
       "title": "Quel est votre poids cible ?",
@@ -174,18 +190,42 @@
     "goalPace": {
       "title": "À quelle vitesse voulez-vous progresser ?",
       "subtitle": "Plus rapide = écart calorique plus important chaque jour.",
-      "slow": { "label": "Régulier", "desc": "~250 kcal/jour • plus facile à tenir" },
-      "standard": { "label": "Équilibré", "desc": "~500 kcal/jour • recommandé" },
-      "aggressive": { "label": "Agressif", "desc": "~750 kcal/jour • exige de la discipline" }
+      "slow": {
+        "label": "Régulier",
+        "desc": "~250 kcal/jour • plus facile à tenir"
+      },
+      "standard": {
+        "label": "Équilibré",
+        "desc": "~500 kcal/jour • recommandé"
+      },
+      "aggressive": {
+        "label": "Agressif",
+        "desc": "~750 kcal/jour • exige de la discipline"
+      }
     },
     "diet": {
       "title": "Que mangez-vous ?",
       "subtitle": "Pour ajuster la répartition des macros.",
-      "omnivore": { "label": "Omnivore", "desc": "Aucune restriction" },
-      "vegetarian": { "label": "Végétarien", "desc": "Sans viande" },
-      "vegan": { "label": "Végan", "desc": "100 % végétal" },
-      "keto": { "label": "Cétogène", "desc": "Très peu de glucides, beaucoup de lipides" },
-      "low_carb": { "label": "Pauvre en glucides", "desc": "Glucides réduits" }
+      "omnivore": {
+        "label": "Omnivore",
+        "desc": "Aucune restriction"
+      },
+      "vegetarian": {
+        "label": "Végétarien",
+        "desc": "Sans viande"
+      },
+      "vegan": {
+        "label": "Végan",
+        "desc": "100 % végétal"
+      },
+      "keto": {
+        "label": "Cétogène",
+        "desc": "Très peu de glucides, beaucoup de lipides"
+      },
+      "low_carb": {
+        "label": "Pauvre en glucides",
+        "desc": "Glucides réduits"
+      }
     }
   },
   "tabs": {
@@ -195,6 +235,69 @@
     "progress": "Progrès",
     "feed": "Fil",
     "profile": "Profil"
+  },
+  "pantry": {
+    "title": "Qu'est-ce que je peux manger ?",
+    "entryTitle": "Qu'est-ce que je peux manger ?",
+    "entrySub": "Scannez votre frigo → des repas qui complètent vos macros",
+    "stepScan": "Scanner",
+    "stepConfirm": "Confirmer",
+    "stepSuggest": "Suggérer",
+    "scanTitle": "Scannez vos ingrédients",
+    "scanBody": "Prenez en photo votre frigo ou placard. On vous propose des repas qui complètent les macros qu'il vous reste aujourd'hui.",
+    "camera": "Appareil photo",
+    "gallery": "Galerie",
+    "analyze": "Trouver des repas",
+    "analyzing": "Lecture de vos ingrédients…",
+    "permissionTitle": "Autorisation requise",
+    "permissionBody": "Autorisez l'accès à l'appareil photo / aux photos pour scanner vos ingrédients.",
+    "useSaved": "Utiliser le garde-manger enregistré",
+    "viewLast": "Voir les dernières suggestions",
+    "confirmTitle": "Confirmer les ingrédients",
+    "confirmBody": "Retirez ce qui est faux, ajoutez ce qu'on a oublié. Rien ne continue sans votre confirmation.",
+    "empty": "Aucun ingrédient pour l'instant — ajoutez-en pour continuer.",
+    "unmatched": "Non reconnu — touchez pour rechercher",
+    "added": "Ajouté",
+    "conf_high": "Confiance élevée",
+    "conf_medium": "Confiance moyenne",
+    "conf_low": "Confiance faible",
+    "addManual": "Ajouter un ingrédient",
+    "getSuggestions": "Suggérer des repas",
+    "needIngredientTitle": "Ajoutez un ingrédient",
+    "needIngredientBody": "Ajoutez au moins un ingrédient reconnu pour obtenir des suggestions.",
+    "remainingToday": "Restant aujourd'hui",
+    "kcal": "kcal",
+    "protein": "Protéines",
+    "carbs": "Glucides",
+    "fat": "Lipides",
+    "setGoalHint": "Définissez votre objectif dans votre profil pour des cibles personnalisées.",
+    "ramadan": "Mode Ramadan",
+    "ramadanHydration": "Restez hydraté entre l'iftar et le suhoor — buvez de l'eau régulièrement.",
+    "weakFit": "Options les plus proches ci-dessous — elles ne complètent pas totalement vos macros restantes.",
+    "noMatchTitle": "Pas encore de bon repas",
+    "noMatchBody": "Ajoutez quelques ingrédients (une protéine et un glucide aident le plus) et réessayez.",
+    "fit": "Adéquation",
+    "coversProtein": "Couvre {{pct}}% des protéines restantes",
+    "shortfallProtein": "ajoutez une source de protéines pour compléter",
+    "shortfallCarbs": "ajoutez une source de glucides pour compléter",
+    "shortfallFat": "ajoutez une bonne matière grasse pour compléter",
+    "shortfallKcal": "un peu léger en calories",
+    "logThis": "Enregistrer",
+    "logged": "Enregistré ✓",
+    "logFailedTitle": "Échec de l'enregistrement",
+    "logFailedBody": "Réessayez.",
+    "signInTitle": "Connexion requise",
+    "signInBody": "Connectez-vous pour enregistrer les repas dans votre total quotidien.",
+    "editIngredients": "Modifier",
+    "scanAgain": "Scanner à nouveau",
+    "searchFood": "Rechercher un aliment",
+    "searchPlaceholder": "ex. poulet, riz, tomate…",
+    "noResults": "Aucune correspondance dans la base d'aliments.",
+    "needsConnection": "Le scan nécessite une connexion. Affichage de votre garde-manger enregistré.",
+    "noFood": "Aucun aliment détecté — essayez une photo plus nette de vos ingrédients.",
+    "noSuggestions": "Impossible de composer un repas avec ces ingrédients. Ajoutez-en quelques-uns.",
+    "genericError": "Une erreur s'est produite. Réessayez.",
+    "disclaimer": "Les suggestions sont des conseils généraux, pas un avis médical ou nutritionnel."
   },
   "home": {
     "todaysWorkout": "Séance du jour",
@@ -211,8 +314,8 @@
     "startTitle": "Prêt à commencer ?",
     "startTagline": "Crée ton programme IA en 30 secondes",
     "startCta": "Commencer",
-    "continueTitle": "Reprends où tu t'es arrêté",
-    "continueTagline": "Ton programme est prêt — continue ta séance du jour",
+    "continueTitle": "On continue",
+    "continueTagline": "Ton programme est prêt — reprends où tu t'es arrêté",
     "continueCta": "Continuer",
     "mealParseTitle": "Photographier un repas",
     "mealParseTaglinePro": "Photo → calories, macros, instantané",
@@ -224,9 +327,11 @@
     "programReview": "Ton bilan de programme est prêt",
     "adaptiveAI": "IA adaptative",
     "aiVision": "IA Vision",
-    "formCheckTitle": "Vérification IA",
+    "formCheckTitle": "Vérification",
     "formCheckTagline": "Filme une série, reçois un retour pro",
     "aiScan": "IA Scan",
+    "whatToEat": "Que manger",
+    "whatToEatSub": "Repas adaptés à tes macros",
     "equipmentScanTitle": "Scanne n'importe quel équipement",
     "equipmentScanTagline": "Hôtel, salle ou maison — on s'adapte",
     "caloriesEaten": "Calories consommées",
@@ -237,6 +342,7 @@
     "activeMin": "Min actives",
     "workouts": "Séances",
     "distance": "Distance",
+    "volume": "Volume",
     "sleptLastNight": "Sommeil cette nuit",
     "restingHr": "FC repos",
     "hrv": "VFC",
@@ -564,6 +670,13 @@
       "analyze": "Analyser avec l'IA",
       "uploading": "Envoi de la photo…",
       "analyzing": "Analyse de la nutrition…",
+      "analyzeSub": "Vision IA · quelques secondes",
+      "stages": {
+        "look": "Observation de votre assiette…",
+        "identify": "Identification des ingrédients…",
+        "portions": "Estimation des portions…",
+        "macros": "Calcul des macros…"
+      },
       "saved": "Enregistré ✓",
       "ingredients": "Ingrédients",
       "aiVerdict": "VERDICT IA",
@@ -600,19 +713,32 @@
       "notesPlaceholder": "ex. éviter le soulevé de terre, préfère le matin, focus épaules",
       "generate": "Générer",
       "upgradeHint": "Les programmes générés par IA sont une fonctionnalité premium. Passez à Premium pour débloquer.",
-      "goals": { "hypertrophy": "Prise de muscle", "strength": "Force", "recomp": "Recomposition" },
+      "goals": {
+        "hypertrophy": "Prise de muscle",
+        "strength": "Force",
+        "recomp": "Recomposition"
+      },
       "goalSub": {
         "hypertrophy": "Focus hypertrophie",
         "strength": "Focus force",
         "recomp": "Sec et muscle"
       },
-      "exps": { "beginner": "Débutant", "intermediate": "Intermédiaire", "advanced": "Avancé" },
+      "exps": {
+        "beginner": "Débutant",
+        "intermediate": "Intermédiaire",
+        "advanced": "Avancé"
+      },
       "expSub": {
         "beginner": "Moins d'un an",
         "intermediate": "1 à 3 ans",
         "advanced": "Plus de 3 ans"
       },
-      "eqs": { "full_gym": "Salle complète", "home_dumbbells": "Maison (haltères)", "bodyweight": "Poids du corps", "minimal": "Minimal (élastiques + haltères)" },
+      "eqs": {
+        "full_gym": "Salle complète",
+        "home_dumbbells": "Maison (haltères)",
+        "bodyweight": "Poids du corps",
+        "minimal": "Minimal (élastiques + haltères)"
+      },
       "eqSub": {
         "full_gym": "Racks, machines, poulies",
         "home_dumbbells": "Réglables ou fixes",
@@ -652,17 +778,37 @@
       "fix": "À corriger",
       "safety": "⚠ Avertissement de sécurité",
       "analyzing": "Analyse de la technique…",
+      "analyzeStages": {
+        "extract": "Extraction des images clés…",
+        "joints": "Suivi de vos articulations…",
+        "angles": "Mesure des angles articulaires…",
+        "scoring": "Évaluation de votre technique…"
+      },
+      "analyzeSub": "VISION IA · ANALYSE DE VOS RÉPÉTITIONS",
+      "analyzeFoot": "ANALYSE",
       "record": "Enregistrer une vidéo",
       "howto": "Comment filmer",
       "howtoBody": "Cadrez-vous de profil. Filmez 1 répétition complète (≈10 s).",
       "weeklyLimit": "Limite hebdomadaire atteinte",
       "upgradeHint": "Passez à Premium pour des vérifications illimitées.",
       "empty": "Aucune vérification pour le moment.",
-      "severity": { "minor": "Mineur", "moderate": "Modéré", "major": "Majeur" }
+      "severity": {
+        "minor": "Mineur",
+        "moderate": "Modéré",
+        "major": "Majeur"
+      }
     },
     "adjust": {
       "title": "Bilan hebdomadaire",
       "loading": "Analyse de votre semaine…",
+      "analyzeStages": {
+        "reading": "Lecture des séances de la semaine…",
+        "volume": "Vérification du volume et de l'intensité…",
+        "recovery": "Évaluation de votre récupération…",
+        "tuning": "Ajustement de votre programme…"
+      },
+      "analyzeSub": "COACH IA · BILAN DE VOTRE SEMAINE",
+      "analyzeFoot": "ANALYSE",
       "summary": "Résumé",
       "apply": "Appliquer la sélection",
       "bannerTitle": "BILAN HEBDOMADAIRE",
@@ -750,9 +896,20 @@
       "almost": "Presque prêt…"
     },
     "tapToScan": "Toucher pour scanner · Choisir depuis la galerie",
-    "results": { "title": "Résultats du scan", "empty": "Aucun scan à afficher." },
-    "confidence": { "high": "CONFIANCE ÉLEVÉE", "medium": "CONFIANCE MOYENNE", "low": "CONFIANCE FAIBLE" },
-    "lvl": { "beginner": "Débutant", "intermediate": "Intermédiaire", "advanced": "Avancé" }
+    "results": {
+      "title": "Résultats du scan",
+      "empty": "Aucun scan à afficher."
+    },
+    "confidence": {
+      "high": "CONFIANCE ÉLEVÉE",
+      "medium": "CONFIANCE MOYENNE",
+      "low": "CONFIANCE FAIBLE"
+    },
+    "lvl": {
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé"
+    }
   },
   "routines": {
     "title": "Routines",
@@ -806,6 +963,8 @@
     "weekN": "Semaine {{n}}",
     "deload": "Décharge",
     "startWorkout": "Commencer la séance",
+    "completed": "Terminé",
+    "redoWorkout": "Refaire la séance",
     "workoutNotFound": "Séance introuvable",
     "liveDay": "En direct · {{name}}",
     "exShort": "{{count}} ex",
@@ -837,14 +996,20 @@
     "saving": "Enregistrement…",
     "saveAndStartWeek1": "Enregistrer et démarrer la semaine 1",
     "saveWithoutStarting": "Enregistrer sans démarrer",
-    "preview": "Aperçu",
     "loadingMessages": {
       "reading": "Lecture de tes séances récentes…",
       "recovery": "Vérification de ta récupération…",
       "nutrition": "Analyse de ta nutrition…",
       "building": "Construction de la séance du jour…",
       "almost": "Presque prêt…"
-    }
+    },
+    "analyzeSub": "COACH IA · CONSTRUCTION DE TA SÉANCE",
+    "analyzeFoot": "CONSTRUCTION",
+    "aiWorkout": "Séance IA",
+    "setsShort": "Séries",
+    "focusShort": "Focus",
+    "warmupTag": "Échauffement",
+    "regenerating": "Régénération…"
   },
   "exercise": {
     "muscles": "MUSCLES",
@@ -870,6 +1035,31 @@
     "body": "CORPS",
     "measurements": "Mesures"
   },
+  "health": {
+    "title": "Connectez vos données de santé",
+    "body": "Sahha lit votre activité et votre récupération pour personnaliser l'entraînement. Vos données restent privées et en lecture seule.",
+    "grant": "Connecter les données de santé",
+    "syncing": "Synchronisation…",
+    "privacy": "Comment nous utilisons vos données de santé",
+    "grantedTitle": "Vous êtes connecté",
+    "grantedBody": "Votre activité et votre récupération continueront de se synchroniser en arrière-plan.",
+    "partialTitle": "Partiellement connecté",
+    "partialBody": "Certaines mesures sont connectées. Vous pouvez autoriser le reste à tout moment dans vos réglages de santé.",
+    "deniedTitle": "Autorisation requise",
+    "deniedBody": "Sahha a besoin d'accéder à vos données de santé pour afficher l'activité et la récupération. Activez-le dans les réglages de santé du système.",
+    "installTitle": "Installer Health Connect",
+    "installBody": "Sahha lit votre activité et votre récupération via Health Connect. Installez-le depuis le Play Store, puis revenez.",
+    "install": "Installer Health Connect",
+    "recheck": "Je l'ai installé",
+    "unavailableTitle": "Données de santé indisponibles",
+    "unavailableBody": "Cet appareil n'a aucune source de santé lisible par Sahha. Vous pouvez tout de même enregistrer vos séances et repas manuellement.",
+    "metrics": {
+      "steps": "Pas et distance",
+      "workouts": "Séances et minutes actives",
+      "sleep": "Sommeil",
+      "heart": "FC repos et VFC"
+    }
+  },
   "wearables": {
     "profileRow": "Wearables et santé",
     "permissions": {
@@ -879,11 +1069,26 @@
       "skip": "Passer pour l'instant",
       "unavailable": "Les données santé ne sont pas disponibles sur cet appareil.",
       "categories": {
-        "activity": { "label": "Activité", "desc": "Pas et calories brûlées" },
-        "heart": { "label": "Cœur", "desc": "FC, FC de repos, VFC" },
-        "sleep": { "label": "Sommeil", "desc": "Durée et qualité du sommeil" },
-        "body": { "label": "Corps", "desc": "Poids et composition corporelle" },
-        "workouts": { "label": "Séances", "desc": "Import auto depuis ta montre" }
+        "activity": {
+          "label": "Activité",
+          "desc": "Pas et calories brûlées"
+        },
+        "heart": {
+          "label": "Cœur",
+          "desc": "FC, FC de repos, VFC"
+        },
+        "sleep": {
+          "label": "Sommeil",
+          "desc": "Durée et qualité du sommeil"
+        },
+        "body": {
+          "label": "Corps",
+          "desc": "Poids et composition corporelle"
+        },
+        "workouts": {
+          "label": "Séances",
+          "desc": "Import auto depuis ta montre"
+        }
       }
     },
     "settings": {
@@ -914,6 +1119,222 @@
       "workouts": "Séances",
       "weight": "Poids",
       "body_fat": "Masse grasse"
+    }
+  },
+  "spotify": {
+    "profileRow": "Spotify",
+    "openSpotify": "Ouvrir Spotify",
+    "prompt": {
+      "title": "Ajoutez votre musique d'entraînement",
+      "subtitle": "Connectez Spotify pour contrôler la musique sans quitter votre séance.",
+      "connect": "Connecter"
+    },
+    "player": {
+      "nothingPlaying": "Aucune lecture",
+      "choosePlaylist": "Choisir une playlist",
+      "openLibrary": "Vos playlists"
+    },
+    "picker": {
+      "title": "Vos playlists",
+      "trackCount": "{{count}} titres",
+      "empty": "Aucune playlist trouvée.",
+      "error": "Impossible de charger vos playlists."
+    },
+    "free": {
+      "controlsPremium": "Le contrôle de lecture nécessite Spotify Premium. Ouvrez Spotify pour écouter."
+    },
+    "noApp": {
+      "message": "Ouvrez l'app Spotify pour contrôler la lecture."
+    },
+    "settings": {
+      "title": "Spotify",
+      "subtitle": "Contrôlez votre musique d'entraînement dans l'app.",
+      "connect": "Connecter Spotify",
+      "disconnect": "Déconnecter Spotify",
+      "connected": "Connecté",
+      "notConnected": "Non connecté",
+      "premium": "Premium",
+      "free": "Gratuit",
+      "unconfigured": "Spotify n'est pas encore configuré dans cette version.",
+      "privacy": "Sahha ne stocke jamais votre mot de passe Spotify. Vous pouvez vous déconnecter à tout moment — cela supprime la connexion enregistrée sur votre appareil."
+    }
+  },
+  "recovery": {
+    "readiness": "Récupération",
+    "building": "Calibrage en cours",
+    "buildingMessage": "Continuez à porter votre appareil — votre score de récupération s'affiche après une semaine de données.",
+    "buildingShort": "calibrage…",
+    "band": {
+      "recovered": "Récupéré",
+      "moderate": "Modéré",
+      "fatigued": "Fatigué"
+    },
+    "messageRecovered": "Vous êtes récupéré — bonne journée pour forcer.",
+    "messageModerate": "Récupération modérée — entraînez-vous comme prévu en écoutant votre corps.",
+    "messageFatigued": "Allez-y doucement aujourd'hui — privilégiez le repos et la récupération.",
+    "sleep": "Sommeil",
+    "restingHr": "FC au repos",
+    "hrv": "VFC",
+    "noData": "Aucune donnée",
+    "vsGoal": "vs objectif",
+    "onGoal": "objectif atteint",
+    "vsAvg": "vs moyenne",
+    "atAvg": "dans la moyenne",
+    "deloadTitle": "Décharge recommandée",
+    "deloadReasonLoad": "Votre charge d'entraînement a fortement augmenté au-dessus de votre référence récente — une semaine plus légère réduit le risque de blessure.",
+    "deloadReasonSuppressed": "Votre récupération est faible depuis {{count}} jours d'affilée — votre corps réclame une semaine plus légère."
+  },
+  "strength": {
+    "title": "Force",
+    "subtitle": "Niveaux et badges",
+    "kicker": "NIVEAU DE FORCE",
+    "openBadges": "Voir les badges",
+    "disclaimer": "Les estimations utilisent la formule d'Epley sur vos séries enregistrées. Les niveaux sont des standards de force relative selon le poids de corps et le sexe.",
+    "tabs": {
+      "levels": "Niveaux",
+      "badges": "Badges"
+    },
+    "level": {
+      "beginner": "Débutant",
+      "novice": "Novice",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé",
+      "elite": "Élite"
+    },
+    "lifts": {
+      "squat": "Squat barre",
+      "bench": "Développé couché",
+      "deadlift": "Soulevé de terre",
+      "overhead_press": "Développé militaire",
+      "barbell_row": "Rowing barre"
+    },
+    "composite": {
+      "subtitle": "Global · {{count}} exercices",
+      "locked": "Ajoutez votre poids pour voir votre niveau"
+    },
+    "liftCard": {
+      "est1rm": "1RM est.",
+      "bestSet": "{{weight}}{{unit}} × {{reps}}",
+      "nextLevel": "{{remaining}}{{unit}} pour {{level}}",
+      "maxLevel": "Niveau max",
+      "noData": "Aucune série",
+      "needsProfileInline": "Ajoutez votre poids"
+    },
+    "empty": {
+      "title": "Enregistrez quelques séries pour débloquer votre niveau",
+      "body": "Enregistrez des séries de travail sur les mouvements principaux — squat, développé couché, soulevé de terre, développé militaire, rowing — et nous estimerons votre 1RM et votre niveau de force."
+    },
+    "needsProfile": {
+      "title": "Ajoutez poids et sexe",
+      "bodyBoth": "Les niveaux de force dépendent du poids de corps. Ajoutez votre poids et votre sexe dans votre profil.",
+      "bodyWeight": "Les niveaux de force dépendent du poids de corps. Ajoutez votre poids dans votre profil.",
+      "bodySex": "Ajoutez votre sexe dans votre profil pour classer vos mouvements."
+    },
+    "badges": {
+      "earned": "Obtenus",
+      "locked": "Verrouillés",
+      "count": "{{earned}}/{{total}}",
+      "noneEarned": "Aucun badge pour l'instant — continuez à enregistrer pour en gagner.",
+      "levelTitle": "{{lift}} {{level}}",
+      "levelDesc": "Palier atteint",
+      "milestone": {
+        "firstPr": {
+          "title": "Premier record",
+          "desc": "Première estimation enregistrée"
+        },
+        "plate1": {
+          "title": "1 disque",
+          "desc": "60 kg sur un mouvement principal"
+        },
+        "plate2": {
+          "title": "Club 2 disques",
+          "desc": "100 kg sur un mouvement principal"
+        },
+        "plate3": {
+          "title": "Club 3 disques",
+          "desc": "140 kg sur un mouvement principal"
+        },
+        "plate4": {
+          "title": "Club 4 disques",
+          "desc": "180 kg sur un mouvement principal"
+        },
+        "bodyweightBench": {
+          "title": "Couché au poids de corps",
+          "desc": "Couché à votre poids de corps"
+        },
+        "squat15x": {
+          "title": "Squat 1,5×",
+          "desc": "Squat à 1,5× le poids de corps"
+        },
+        "deadlift2x": {
+          "title": "Soulevé 2×",
+          "desc": "Soulevé à 2× le poids de corps"
+        }
+      }
+    },
+    "celebrate": {
+      "levelUp": "NIVEAU SUPÉRIEUR",
+      "levelUpBody": "{{lift}} · {{level}}",
+      "badge": "BADGE DÉBLOQUÉ",
+      "tapToContinue": "Touchez pour continuer"
+    },
+    "progressCard": {
+      "title": "Niveau de force",
+      "sub": "Mouvements, niveaux et badges"
+    }
+  },
+  "readiness": {
+    "kicker": "Aujourd'hui",
+    "state": {
+      "primed": "Au top",
+      "ready": "Prêt",
+      "caution": "Prudence",
+      "rest": "Repos"
+    },
+    "line": {
+      "primed": "Tu es au top — une belle journée pour pousser un peu plus.",
+      "ready": "Tu es prêt — entraîne-toi comme prévu.",
+      "caution": "Lève le pied aujourd'hui — charges plus légères, intensité plafonnée.",
+      "rest": "Jour de repos — limite-toi à la récupération active."
+    },
+    "adj": {
+      "load": "Charge ×{{mult}}",
+      "noRpeCap": "Pas de plafond RPE",
+      "rpeCap": "RPE ≤ {{cap}}",
+      "trimAccessories": "Réduis les accessoires",
+      "activeRecovery": "Récupération active seulement"
+    },
+    "why": "Pourquoi",
+    "driver": {
+      "acwr": {
+        "positive": "Ta charge d'entraînement est dans la zone idéale (ACWR {{value}}).",
+        "negative": "Ta charge a grimpé — tu es en surmenage (ACWR {{value}}).",
+        "neutral": "Ta charge est légèrement élevée (ACWR {{value}})."
+      },
+      "recovery": {
+        "positive": "Ta récupération est élevée ({{value}}/100).",
+        "negative": "Ta récupération est faible ({{value}}/100).",
+        "neutral": "Ta récupération est modérée ({{value}}/100)."
+      },
+      "rest": {
+        "negative": "Aucun jour de repos durant la dernière semaine."
+      },
+      "subjective": {
+        "negative": "Tu as signalé peu d'énergie et beaucoup de courbatures."
+      },
+      "none": "Pas encore assez de signaux pour expliquer le verdict du jour."
+    },
+    "checkin": {
+      "title": "Comment te sens-tu ?",
+      "energy": "Énergie",
+      "soreness": "Courbatures"
+    },
+    "disclaimer": "Conseils d'entraînement, pas un avis médical.",
+    "building": "Ton historique se construit encore — le verdict s'affinera après une semaine de données.",
+    "offline": "Affichage de ton dernier verdict enregistré (hors ligne).",
+    "locked": {
+      "title": "Débloque ta forme du jour",
+      "body": "Obtiens un verdict quotidien et un ajustement de charge précis à partir de ta récupération et de ta charge d'entraînement."
     }
   }
 }

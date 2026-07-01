@@ -19,6 +19,8 @@ export { Icon } from './components/Icon';
 export { TabBar } from './components/TabBar';
 export { MuscleSilhouette } from './components/MuscleSilhouette';
 export { AIReasoningCard } from './components/AIReasoningCard';
+export { AnalyzingScope } from './components/AnalyzingScope';
+export type { AnalyzingScopeProps } from './components/AnalyzingScope';
 export { ConfirmSheet } from './components/ConfirmSheet';
 export { CalendarSheet } from './components/CalendarSheet';
 export type { IconName } from './components/Icon';

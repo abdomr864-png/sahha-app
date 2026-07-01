@@ -1,18 +1,21 @@
 import { useMemo, type ReactNode } from 'react';
-import { Platform, Text, View } from 'react-native';
-import Svg, { Defs, LinearGradient as SvgGradient, Rect, Stop } from 'react-native-svg';
+import { Pressable, Text, View } from 'react-native';
+import Svg, { Circle, Defs, LinearGradient as SvgGradient, Path, Stop } from 'react-native-svg';
+import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
 import { Icon, Screen } from '@features/shared';
 import type { IconName } from '@features/shared';
 import { useWorkoutHistory } from '@features/workouts';
 import { useProfile } from '@features/onboarding';
 
-const monoFamily = Platform.select({ ios: 'Menlo', android: 'monospace', default: 'monospace' });
+const monoFamily = 'SpaceGrotesk_700Bold';
 const MS_PER_DAY = 86_400_000;
 const WEEKS = 12;
 
 export default function Progress() {
   const { t } = useTranslation();
+  const router = useRouter();
   const history = useWorkoutHistory();
   const profile = useProfile();
 
@@ -80,6 +83,40 @@ export default function Progress() {
             value={`${stats.streakDays}d`}
           />
         </View>
+
+        {/* Strength level entry — links to the Strength screen */}
+        <Pressable
+          onPress={() => router.push('/strength')}
+          className="rounded-3xl overflow-hidden mb-3 flex-row items-center"
+          style={{
+            backgroundColor: '#14141C',
+            borderWidth: 1,
+            borderColor: 'rgba(255,77,46,0.30)',
+            padding: 16,
+          }}
+        >
+          <View
+            className="items-center justify-center overflow-hidden rounded-2xl mr-3"
+            style={{ width: 44, height: 44 }}
+          >
+            <LinearGradient
+              colors={['#FF8A2B', '#FF2D55'] as unknown as readonly [string, string]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            />
+            <Icon name="medal" size={20} color="#FFFFFF" />
+          </View>
+          <View className="flex-1">
+            <Text className="text-ink text-base font-extrabold tracking-tight">
+              {t('strength.progressCard.title')}
+            </Text>
+            <Text className="text-ink-muted text-[12px] mt-0.5">
+              {t('strength.progressCard.sub')}
+            </Text>
+          </View>
+          <Icon name="chevron-right" size={20} color="#74748A" />
+        </Pressable>
 
         {/* Volume chart — REAL, last 12 weeks */}
         <Panel className="mb-3">
@@ -313,9 +350,9 @@ function Panel({ children, className = '' }: { children: ReactNode; className?: 
     <View
       className={`rounded-3xl overflow-hidden ${className}`}
       style={{
-        backgroundColor: '#13131A',
+        backgroundColor: '#14141C',
         borderWidth: 1,
-        borderColor: '#27272F',
+        borderColor: '#21212B',
       }}
     >
       <View style={{ height: 1, flexDirection: 'row' }}>
@@ -368,9 +405,9 @@ function BigStat({
     <View
       className="flex-1 rounded-3xl overflow-hidden"
       style={{
-        backgroundColor: '#13131A',
+        backgroundColor: '#14141C',
         borderWidth: 1,
-        borderColor: accent ? 'rgba(255,77,46,0.30)' : '#27272F',
+        borderColor: accent ? 'rgba(255,77,46,0.30)' : '#21212B',
       }}
     >
       <View style={{ height: 1, flexDirection: 'row' }}>
@@ -387,7 +424,24 @@ function BigStat({
           >
             {label}
           </Text>
-          <Icon name={icon} size={14} color="#FF4D2E" />
+          <View
+            className="items-center justify-center overflow-hidden"
+            style={{ width: 32, height: 32, borderRadius: 10 }}
+          >
+            <LinearGradient
+              colors={
+                (accent ? ['#F5C451', '#FF8A2B'] : ['#FF8A2B', '#FF2D55']) as unknown as readonly [
+                  string,
+                  string,
+                  ...string[],
+                ]
+              }
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            />
+            <Icon name={icon} size={16} color="#FFFFFF" />
+          </View>
         </View>
         <View className="flex-row items-baseline">
           <Text
@@ -419,13 +473,13 @@ function MiniStat({ icon, label, value }: { icon: IconName; label: string; value
     <View
       className="flex-1 rounded-2xl px-3 py-3"
       style={{
-        backgroundColor: '#13131A',
+        backgroundColor: '#14141C',
         borderWidth: 1,
-        borderColor: '#27272F',
+        borderColor: '#21212B',
       }}
     >
       <View className="flex-row items-center mb-1.5" style={{ gap: 6 }}>
-        <Icon name={icon} size={12} color="#A1A1AA" />
+        <Icon name={icon} size={12} color="#B4B4C2" />
         <Text
           className="text-ink-muted text-[10px] font-extrabold uppercase"
           style={{ letterSpacing: 1 }}
@@ -453,7 +507,7 @@ function DeltaPill({
   tone: 'up' | 'down' | 'flat';
   compact?: boolean;
 }) {
-  const color = tone === 'up' ? '#34D399' : tone === 'down' ? '#F87171' : '#A1A1AA';
+  const color = tone === 'up' ? '#2EE6A6' : tone === 'down' ? '#FF4D6D' : '#B4B4C2';
   const bg =
     tone === 'up'
       ? 'rgba(52,211,153,0.12)'
@@ -487,66 +541,64 @@ function DeltaPill({
 /* ---------- Volume chart ---------- */
 
 function VolumeChart({ bars }: { bars: number[] }) {
-  const HEIGHT = 140;
-  const GAP = 6;
-  const lastIdx = bars.length - 1;
+  // Area + line chart (Sahha design). `bars` are 0–100 normalized values.
+  const W = 320;
+  const H = 140;
+  const pad = 6;
   const allZero = bars.every((b) => b === 0);
+  const data = bars.length ? bars : [0, 0];
+  const n = data.length;
+  const bw = (W - pad * 2) / n;
+  const pts = data.map((v, i) => {
+    const x = pad + bw * i + bw / 2;
+    const clamped = Math.max(0, Math.min(100, v));
+    const y = H - pad - (clamped / 100) * (H - pad * 2 - 8);
+    return [x, y] as const;
+  });
+  const line = pts
+    .map((p, i) => `${i === 0 ? 'M' : 'L'}${p[0].toFixed(1)} ${p[1].toFixed(1)}`)
+    .join(' ');
+  const last = pts[pts.length - 1]!;
+  const first = pts[0]!;
+  const area = `${line} L${last[0].toFixed(1)} ${H} L${first[0].toFixed(1)} ${H} Z`;
 
   return (
-    <View>
-      <View
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: HEIGHT,
-          justifyContent: 'space-between',
-        }}
-        pointerEvents="none"
-      >
-        {[0, 1, 2, 3].map((i) => (
-          <View
-            key={i}
-            style={{ height: 1, backgroundColor: i === 3 ? '#27272F' : 'rgba(39,39,47,0.5)' }}
-          />
-        ))}
-      </View>
-
-      <View className="flex-row items-end" style={{ height: HEIGHT, gap: GAP }}>
-        {bars.map((h, i) => {
-          const isLatest = i === lastIdx;
-          const barH = allZero ? 4 : Math.max(4, (h / 100) * (HEIGHT - 6));
-          const opacity = allZero ? 0.25 : 1;
-          return (
-            <View key={i} style={{ flex: 1, height: HEIGHT, justifyContent: 'flex-end' }}>
-              <View style={{ width: '100%', height: barH, opacity }}>
-                <Svg width="100%" height="100%">
-                  <Defs>
-                    <SvgGradient id={`bar${i}`} x1="0" y1="0" x2="0" y2="1">
-                      <Stop
-                        offset="0"
-                        stopColor={isLatest ? '#FF7A4D' : '#FF4D2E'}
-                        stopOpacity={isLatest ? 1 : 0.55}
-                      />
-                      <Stop offset="1" stopColor="#FF4D2E" stopOpacity={isLatest ? 1 : 0.18} />
-                    </SvgGradient>
-                  </Defs>
-                  <Rect
-                    x="0"
-                    y="0"
-                    width="100%"
-                    height="100%"
-                    rx="4"
-                    ry="4"
-                    fill={`url(#bar${i})`}
-                  />
-                </Svg>
-              </View>
-            </View>
-          );
-        })}
-      </View>
+    <View style={{ height: H }}>
+      <Svg width="100%" height={H} viewBox={`0 0 ${W} ${H}`}>
+        <Defs>
+          <SvgGradient id="volArea" x1="0" y1="0" x2="0" y2="1">
+            <Stop offset="0" stopColor="#FF7A1A" stopOpacity={0.35} />
+            <Stop offset="1" stopColor="#FF2D55" stopOpacity={0} />
+          </SvgGradient>
+          <SvgGradient id="volLine" x1="0" y1="0" x2="1" y2="0">
+            <Stop offset="0" stopColor="#FF8A2B" />
+            <Stop offset="1" stopColor="#FF2D55" />
+          </SvgGradient>
+        </Defs>
+        {!allZero ? <Path d={area} fill="url(#volArea)" /> : null}
+        <Path
+          d={line}
+          fill="none"
+          stroke="url(#volLine)"
+          strokeWidth={2.5}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          opacity={allZero ? 0.3 : 1}
+        />
+        {!allZero ? (
+          <>
+            <Circle cx={last[0]} cy={last[1]} r={9} fill="#FF2D55" opacity={0.25} />
+            <Circle
+              cx={last[0]}
+              cy={last[1]}
+              r={4}
+              fill="#FFFFFF"
+              stroke="#FF2D55"
+              strokeWidth={2}
+            />
+          </>
+        ) : null}
+      </Svg>
     </View>
   );
 }
@@ -558,9 +610,9 @@ function BodyTile({ label, value, unit }: { label: string; value: string; unit: 
     <View
       className="flex-1 rounded-2xl px-3.5 py-3.5"
       style={{
-        backgroundColor: '#1B1B24',
+        backgroundColor: '#1B1B25',
         borderWidth: 1,
-        borderColor: '#27272F',
+        borderColor: '#21212B',
       }}
     >
       <Text

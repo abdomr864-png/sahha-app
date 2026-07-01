@@ -70,7 +70,7 @@ export function SavedEquipmentScreen() {
                     {new Date(row.saved_at).toLocaleDateString()}
                   </Text>
                 </View>
-                <Icon name="chevron-right" size={18} color="#A1A1AA" />
+                <Icon name="chevron-right" size={18} color="#B4B4C2" />
               </View>
             </Card>
           </Pressable>

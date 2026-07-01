@@ -1,3 +1,11 @@
 export { MealParseScreen } from './components/MealParseScreen';
+export { MealDetailScreen } from './components/MealDetailScreen';
+export { MealHistory } from './components/MealHistory';
+export { useMealHistory } from './hooks/useMealHistory';
+export type { MealHistoryEntry, MealVerdict } from './hooks/useMealHistory';
+export { useMealDetail } from './hooks/useMealDetail';
+export type { MealDetail } from './hooks/useMealDetail';
 export { useTodayNutrition } from './hooks/useTodayNutrition';
 export type { TodayNutrition } from './hooks/useTodayNutrition';
+export { useActivityCalendar } from './hooks/useActivityCalendar';
+export type { ActivityCalendar } from './hooks/useActivityCalendar';

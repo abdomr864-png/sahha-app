@@ -14,13 +14,14 @@ import {
   SocialAuthButtons,
   SocialAuthDivider,
 } from '@features/auth';
+import { hasCompletedOnboarding } from '@features/onboarding';
 
 function BackIcon() {
   return (
     <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
       <Path
         d="M15 6l-6 6 6 6"
-        stroke="#F4F4F5"
+        stroke="#F4F4F7"
         strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -54,7 +55,12 @@ export default function SignIn() {
     }
     setValidationErr(null);
     signIn.mutate(parsed.data, {
-      onSuccess: () => router.replace('/(tabs)/'),
+      onSuccess: async (session) => {
+        // Resume the quiz for anyone who hasn't finished it — a user who
+        // confirmed their email after sign-up, or abandoned onboarding earlier.
+        const done = session?.user ? await hasCompletedOnboarding(session.user.id) : true;
+        router.replace(done ? '/(tabs)/' : '/(onboarding)/intro');
+      },
     });
   };
 

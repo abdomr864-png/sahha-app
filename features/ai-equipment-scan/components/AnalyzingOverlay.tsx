@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { useEffect, useState } from 'react';
 import { Text, View, useWindowDimensions } from 'react-native';
 import { useTranslation } from 'react-i18next';
@@ -24,7 +23,7 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const AnimatedPath = Animated.createAnimatedComponent(Path);
 
 const ACCENT = '#FF4D2E';
-const ACCENT_SOFT = '#FF7A4D';
+const ACCENT_SOFT = '#FF8A2B';
 
 /**
  * Full-screen "AI is analyzing the equipment" overlay.
@@ -304,7 +303,7 @@ export function AnalyzingOverlay({ visible }: { visible: boolean }) {
             cx={CENTER}
             cy={CENTER}
             r={INNER_RING_R}
-            stroke="#27272F"
+            stroke="#21212B"
             strokeWidth={1.5}
             fill="none"
           />
@@ -346,7 +345,7 @@ export function AnalyzingOverlay({ visible }: { visible: boolean }) {
               cx={CENTER}
               cy={CENTER}
               r={RETICLE_R}
-              stroke="#3F3F46"
+              stroke="#34343F"
               strokeWidth={1}
               strokeDasharray="2 6"
               fill="none"
@@ -408,7 +407,7 @@ export function AnalyzingOverlay({ visible }: { visible: boolean }) {
               const x = CENTER + Math.cos(a) * ORBIT_B_R;
               const y = CENTER + Math.sin(a) * ORBIT_B_R;
               return (
-                <Circle key={`b-${deg}`} cx={x} cy={y} r={1.8} fill="#FBBF24" opacity={0.85} />
+                <Circle key={`b-${deg}`} cx={x} cy={y} r={1.8} fill="#F5C451" opacity={0.85} />
               );
             })}
           </Svg>
@@ -464,7 +463,7 @@ export function AnalyzingOverlay({ visible }: { visible: boolean }) {
           entering={FadeIn.duration(280)}
           exiting={FadeOut.duration(160)}
           style={{
-            color: '#F4F4F5',
+            color: '#F4F4F7',
             fontSize: 19,
             fontWeight: '800',
             letterSpacing: 0.2,
@@ -474,7 +473,7 @@ export function AnalyzingOverlay({ visible }: { visible: boolean }) {
         </Animated.Text>
         <Text
           style={{
-            color: '#A1A1AA',
+            color: '#B4B4C2',
             fontSize: 11,
             marginTop: 8,
             letterSpacing: 1.4,
@@ -491,9 +490,9 @@ export function AnalyzingOverlay({ visible }: { visible: boolean }) {
             width: '100%',
             height: 6,
             borderRadius: 3,
-            backgroundColor: '#1B1B24',
+            backgroundColor: '#1B1B25',
             borderWidth: 1,
-            borderColor: '#27272F',
+            borderColor: '#21212B',
             overflow: 'hidden',
           }}
         >
@@ -542,7 +541,7 @@ export function AnalyzingOverlay({ visible }: { visible: boolean }) {
         >
           <Text
             style={{
-              color: '#A1A1AA',
+              color: '#B4B4C2',
               fontSize: 10,
               fontWeight: '700',
               letterSpacing: 1.2,
@@ -620,7 +619,7 @@ function ProgressDots({ index, total }: { index: number; total: number }) {
             width: i === index ? 18 : 6,
             height: 6,
             borderRadius: 3,
-            backgroundColor: i === index ? ACCENT : '#3F3F46',
+            backgroundColor: i === index ? ACCENT : '#34343F',
           }}
         />
       ))}

@@ -84,11 +84,11 @@ export function AuthGateSheet() {
               paddingBottom: Math.max(insets.bottom, 16) + 8,
               paddingHorizontal: 22,
               paddingTop: 14,
-              backgroundColor: '#13131A',
+              backgroundColor: '#14141C',
               borderTopLeftRadius: 30,
               borderTopRightRadius: 30,
               borderTopWidth: 1,
-              borderColor: '#27272F',
+              borderColor: '#21212B',
             },
             sheetStyle,
           ]}
@@ -100,7 +100,7 @@ export function AuthGateSheet() {
               width: 44,
               height: 4,
               borderRadius: 2,
-              backgroundColor: '#3F3F46',
+              backgroundColor: '#34343F',
               marginBottom: 18,
             }}
           />
@@ -121,7 +121,7 @@ export function AuthGateSheet() {
               }}
             >
               <LinearGradient
-                colors={['#FF7A4D', '#FF4D2E', '#D6321A']}
+                colors={['#FF8A2B', '#FF4D2E', '#D6321A']}
                 start={{ x: 0.2, y: 0 }}
                 end={{ x: 0.8, y: 1 }}
                 style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
@@ -226,14 +226,14 @@ function SecondaryCTA({ label, onPress }: { label: string; onPress: () => void }
         borderRadius: 18,
         backgroundColor: '#1B1B22',
         borderWidth: 1,
-        borderColor: '#27272F',
+        borderColor: '#21212B',
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         opacity: pressed ? 0.85 : 1,
       })}
     >
-      <Text style={{ color: '#F4F4F5', fontSize: 15, fontWeight: '700' }}>{label}</Text>
+      <Text style={{ color: '#F4F4F7', fontSize: 15, fontWeight: '700' }}>{label}</Text>
     </Pressable>
   );
 }

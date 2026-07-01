@@ -97,7 +97,7 @@ export function LibraryView() {
           !lib.isPending ? (
             <View className="items-center mt-10">
               <View className="w-14 h-14 rounded-2xl bg-bg-raised border border-border items-center justify-center mb-3">
-                <Icon name="search" size={22} color="#A1A1AA" />
+                <Icon name="search" size={22} color="#B4B4C2" />
               </View>
               <Text className="text-ink-subtle text-center">{t('train.library.noResults')}</Text>
             </View>
@@ -117,7 +117,7 @@ export function LibraryView() {
                 {t(`train.muscleGroups.${item.muscle_group}`, {
                   defaultValue: item.muscle_group,
                 })}{' '}
-                · {t(`train.equipment.${item.equipment}`, { defaultValue: item.equipment })}
+                Â· {t(`train.equipment.${item.equipment}`, { defaultValue: item.equipment })}
               </Text>
             </View>
             <View
@@ -125,7 +125,7 @@ export function LibraryView() {
                 draft ? 'bg-accent' : 'bg-bg-subtle border border-border'
               }`}
             >
-              <Icon name="plus" size={16} color={draft ? '#FFFFFF' : '#A1A1AA'} />
+              <Icon name="plus" size={16} color={draft ? '#FFFFFF' : '#B4B4C2'} />
             </View>
           </Pressable>
         )}

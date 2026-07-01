@@ -18,10 +18,10 @@ export async function authenticate(req: Request): Promise<AuthCtx | Response> {
   );
   if (!auth || !auth.toLowerCase().startsWith('bearer ')) {
     console.log('[auth] reject: missing/malformed Authorization header');
-    return new Response(JSON.stringify({ error: 'unauthenticated' }), {
-      status: 401,
-      headers: { 'content-type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ error: 'unauthenticated', detail: 'missing_bearer_header' }),
+      { status: 401, headers: { 'content-type': 'application/json' } },
+    );
   }
   const jwt = auth.slice(7);
   console.log('[auth] jwt length:', jwt.length, 'first 20 chars:', jwt.slice(0, 20));
@@ -40,10 +40,13 @@ export async function authenticate(req: Request): Promise<AuthCtx | Response> {
   const { data, error } = await user.auth.getUser();
   if (error || !data?.user) {
     console.log('[auth] reject: getUser failed. error:', error?.message, 'user:', !!data?.user);
-    return new Response(JSON.stringify({ error: 'unauthenticated' }), {
-      status: 401,
-      headers: { 'content-type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({
+        error: 'unauthenticated',
+        detail: error?.message ?? 'getUser returned no user',
+      }),
+      { status: 401, headers: { 'content-type': 'application/json' } },
+    );
   }
   console.log('[auth] OK userId:', data.user.id);
   return { userId: data.user.id, jwt, user, admin };

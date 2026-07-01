@@ -10,31 +10,103 @@ import {
   useSafeBack,
   type IconName,
 } from '@features/shared';
-import { useSubscription } from '@features/premium';
+import { usePlans, useSubscription } from '@features/premium';
 
-type Plan = 'monthly' | 'yearly';
+type TierId = string;
 
-interface Feature {
-  icon: IconName;
-  key: string;
+interface Tier {
+  id: TierId;
+  /** i18n key suffix under premium.paywall.tiers.<id> */
+  name: string;
+  price: string;
+  /** Billing cadence line (e.g. "/ year", "one-time"). */
+  unit: string;
+  /** Optional secondary line, e.g. monthly-equivalent or trial note. */
+  sub?: string;
+  /** Optional ribbon, e.g. "Most popular". */
+  badge?: string;
+  highlight?: boolean;
+  /** Feature bullets (already-translated strings). */
+  features: string[];
 }
-
-const FEATURES: Feature[] = [
-  { icon: 'sparkles', key: 'ai_unlimited' },
-  { icon: 'zap', key: 'programs' },
-  { icon: 'heart', key: 'biometrics' },
-  { icon: 'image', key: 'progress' },
-  { icon: 'medal', key: 'priority' },
-];
 
 export default function Paywall() {
   const { t } = useTranslation();
   const safeBack = useSafeBack('/(tabs)/profile');
   const sub = useSubscription();
-  const [plan, setPlan] = useState<Plan>('yearly');
+  const plans = usePlans();
 
   const isPremium = sub.data?.isPremium ?? false;
   const expiresAt = sub.data?.expires_at;
+
+  // Hard-coded fallback — used offline or before the admin-managed `plans`
+  // table is seeded. When live plans exist, they override price/copy/order.
+  const fallbackTiers: Tier[] = [
+    {
+      id: 'pro',
+      name: t('premium.paywall.tiers.pro.name', 'Pro'),
+      price: '$71.99',
+      unit: t('premium.paywall.perYear', '/ year'),
+      sub: t('premium.paywall.tiers.pro.sub', 'or $11.99 / mo · 7-day trial'),
+      features: [
+        t('premium.paywall.tiers.pro.f1', 'Full recovery: HRV + ACWR'),
+        t('premium.paywall.tiers.pro.f2', 'Strength levels & badges'),
+        t('premium.paywall.tiers.pro.f3', 'Apple Watch app'),
+        t('premium.paywall.tiers.pro.f4', 'Unlimited history + analytics'),
+      ],
+    },
+    {
+      id: 'elite',
+      name: t('premium.paywall.tiers.elite.name', 'Elite'),
+      price: '$119.99',
+      unit: t('premium.paywall.perYear', '/ year'),
+      sub: t('premium.paywall.tiers.elite.sub', 'or $19.99 / mo · 7-day trial'),
+      badge: t('premium.paywall.tiers.elite.badge', 'Most popular'),
+      highlight: true,
+      features: [
+        t('premium.paywall.tiers.elite.f1', 'Everything in Pro'),
+        t('premium.paywall.tiers.elite.f2', 'Unlimited AI coach & chat'),
+        t('premium.paywall.tiers.elite.f3', 'Equipment scan, form check & meal AI'),
+        t('premium.paywall.tiers.elite.f4', 'Adaptive AI programs'),
+      ],
+    },
+    {
+      id: 'lifetime',
+      name: t('premium.paywall.tiers.lifetime.name', 'Lifetime'),
+      price: '$199.99',
+      unit: t('premium.paywall.oneTime', 'one-time'),
+      sub: t('premium.paywall.tiers.lifetime.sub', 'Pay once · keep forever'),
+      features: [
+        t('premium.paywall.tiers.lifetime.f1', 'Everything in Elite, forever'),
+        t('premium.paywall.tiers.lifetime.f2', 'AI fair-use included'),
+        t('premium.paywall.tiers.lifetime.f3', 'All future updates'),
+      ],
+    },
+  ];
+
+  const fmtPrice = (price: number, currency: string) =>
+    currency === 'USD' || !currency ? `$${price}` : `${price} ${currency}`;
+  const fmtUnit = (interval: string) =>
+    interval === 'one_time'
+      ? t('premium.paywall.oneTime', 'one-time')
+      : interval === 'month'
+        ? t('premium.paywall.perMonth', '/ mo')
+        : t('premium.paywall.perYear', '/ year');
+
+  const liveTiers: Tier[] = (plans.data ?? []).map((p) => ({
+    id: p.id,
+    name: p.name,
+    price: fmtPrice(p.price, p.currency),
+    unit: fmtUnit(p.billing_interval),
+    sub: p.description ?? undefined,
+    badge: p.badge ?? undefined,
+    highlight: p.highlight,
+    features: p.features ?? [],
+  }));
+
+  const tiers: Tier[] = liveTiers.length > 0 ? liveTiers : fallbackTiers;
+  const [selected, setSelected] = useState<TierId>('elite');
+  const selectedId = tiers.some((tr) => tr.id === selected) ? selected : tiers[0]?.id;
 
   const onPurchase = () => {
     Alert.alert(t('premium.paywall.title'), t('premium.paywall.comingSoon'), [{ text: 'OK' }]);
@@ -74,7 +146,7 @@ export default function Paywall() {
 
           {isPremium ? (
             <View className="mt-4 flex-row items-center bg-success/15 border border-success/40 rounded-full px-4 py-1.5">
-              <Icon name="check-circle" size={14} color="#34D399" />
+              <Icon name="check-circle" size={14} color="#2EE6A6" />
               <Text className="text-success ml-1.5 text-xs font-bold tracking-wider uppercase">
                 {sub.data?.status === 'trialing'
                   ? t('premium.paywall.trialing')
@@ -84,42 +156,18 @@ export default function Paywall() {
           ) : null}
         </View>
 
-        {/* Features */}
-        <Card tone="raised" className="mb-6">
-          <View style={{ gap: 14 }}>
-            {FEATURES.map((f) => (
-              <View key={f.key} className="flex-row items-center">
-                <View className="w-9 h-9 rounded-xl bg-accent/15 items-center justify-center mr-3">
-                  <Icon name={f.icon} size={16} color="#FF4D2E" />
-                </View>
-                <Text className="text-ink text-sm font-semibold flex-1">
-                  {t(`premium.paywall.features.${f.key}`)}
-                </Text>
-                <Icon name="check" size={16} color="#34D399" strokeWidth={2.4} />
-              </View>
-            ))}
-          </View>
-        </Card>
-
-        {/* Plan switcher */}
         {!isPremium ? (
           <>
-            <View className="flex-row mb-6" style={{ gap: 10 }}>
-              <PlanCard
-                active={plan === 'yearly'}
-                onPress={() => setPlan('yearly')}
-                label={t('premium.paywall.yearly')}
-                price="$59.99"
-                unit={t('premium.paywall.perYear')}
-                badge={t('premium.paywall.save', { percent: 50 })}
-              />
-              <PlanCard
-                active={plan === 'monthly'}
-                onPress={() => setPlan('monthly')}
-                label={t('premium.paywall.monthly')}
-                price="$9.99"
-                unit={t('premium.paywall.perMonth')}
-              />
+            {/* Tier cards */}
+            <View style={{ gap: 12 }} className="mb-6">
+              {tiers.map((tier) => (
+                <TierCard
+                  key={tier.id}
+                  tier={tier}
+                  active={selectedId === tier.id}
+                  onPress={() => setSelected(tier.id)}
+                />
+              ))}
             </View>
 
             <Button label={t('premium.paywall.cta')} icon="sparkles" onPress={onPurchase} />
@@ -138,7 +186,7 @@ export default function Paywall() {
           <>
             <Card className="mb-4">
               <View className="flex-row items-center">
-                <Icon name="calendar" size={16} color="#A1A1AA" />
+                <Icon name="calendar" size={16} color="#B4B4C2" />
                 <Text className="text-ink-subtle text-sm ml-2">
                   {expiresAt
                     ? t('premium.paywall.expires', {
@@ -158,25 +206,12 @@ export default function Paywall() {
   );
 }
 
-function PlanCard({
-  active,
-  onPress,
-  label,
-  price,
-  unit,
-  badge,
-}: {
-  active: boolean;
-  onPress: () => void;
-  label: string;
-  price: string;
-  unit: string;
-  badge?: string;
-}) {
+function TierCard({ tier, active, onPress }: { tier: Tier; active: boolean; onPress: () => void }) {
   return (
     <Pressable
       onPress={onPress}
-      className={`flex-1 rounded-2xl p-4 border ${
+      accessibilityRole="button"
+      className={`rounded-2xl p-4 border ${
         active ? 'bg-accent/10 border-accent' : 'bg-bg-raised border-border'
       }`}
       style={
@@ -190,24 +225,47 @@ function PlanCard({
             }
           : undefined
       }
-      accessibilityRole="button"
     >
-      {badge ? (
-        <View className="self-start bg-accent rounded-full px-2 py-0.5 mb-2">
-          <Text className="text-white text-[9px] font-extrabold tracking-wider uppercase">
-            {badge}
-          </Text>
+      <View className="flex-row items-start justify-between mb-2">
+        <View className="flex-1">
+          <View className="flex-row items-center">
+            <Text
+              className={`${
+                active ? 'text-accent' : 'text-ink'
+              } text-lg font-extrabold tracking-tight`}
+            >
+              {tier.name}
+            </Text>
+            {tier.badge ? (
+              <View className="ml-2 bg-accent rounded-full px-2 py-0.5">
+                <Text className="text-white text-[9px] font-extrabold tracking-wider uppercase">
+                  {tier.badge}
+                </Text>
+              </View>
+            ) : null}
+          </View>
+          {tier.sub ? <Text className="text-ink-muted text-[11px] mt-0.5">{tier.sub}</Text> : null}
         </View>
-      ) : null}
-      <Text
-        className={`${
-          active ? 'text-accent' : 'text-ink-muted'
-        } text-[10px] font-bold uppercase tracking-widest`}
-      >
-        {label}
-      </Text>
-      <Text className="text-ink text-2xl font-extrabold mt-1">{price}</Text>
-      <Text className="text-ink-muted text-[11px] mt-0.5">{unit}</Text>
+        <View className="items-end">
+          <Text className="text-ink text-2xl font-extrabold">{tier.price}</Text>
+          <Text className="text-ink-muted text-[11px]">{tier.unit}</Text>
+        </View>
+      </View>
+
+      <View style={{ gap: 8 }} className="mt-1">
+        {tier.features.map((f, i) => (
+          <FeatureRow key={i} label={f} icon={tier.highlight ? 'sparkles' : 'check'} />
+        ))}
+      </View>
     </Pressable>
+  );
+}
+
+function FeatureRow({ label, icon }: { label: string; icon: IconName }) {
+  return (
+    <View className="flex-row items-center">
+      <Icon name={icon} size={14} color="#2EE6A6" strokeWidth={2.4} />
+      <Text className="text-ink text-sm ml-2 flex-1">{label}</Text>
+    </View>
   );
 }

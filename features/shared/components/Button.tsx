@@ -1,9 +1,17 @@
 import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import type { PressableProps } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Icon, type IconName } from './Icon';
 
 type Variant = 'primary' | 'secondary' | 'ghost' | 'danger';
 type Size = 'sm' | 'md' | 'lg';
+
+// Signature flame gradient (--grad-flame): #FF8A2B → #FF4D2E → #FF2D55
+const FLAME = ['#FF8A2B', '#FF4D2E', '#FF2D55'] as unknown as readonly [
+  string,
+  string,
+  ...string[],
+];
 
 interface Props extends Omit<PressableProps, 'children'> {
   label: string;
@@ -16,8 +24,8 @@ interface Props extends Omit<PressableProps, 'children'> {
 }
 
 const sizeStyles: Record<Size, string> = {
-  sm: 'px-4 py-2.5 rounded-xl',
-  md: 'px-5 py-3.5 rounded-2xl',
+  sm: 'px-4 py-3 rounded-xl',
+  md: 'px-5 py-4 rounded-2xl',
   lg: 'px-6 py-4 rounded-2xl',
 };
 const labelSize: Record<Size, string> = {
@@ -26,22 +34,24 @@ const labelSize: Record<Size, string> = {
   lg: 'text-base',
 };
 
+// `primary` is rendered with the flame LinearGradient (transparent bg here so
+// the gradient shows through). Other variants stay solid.
 const variants: Record<Variant, string> = {
-  primary: 'bg-accent border border-accent',
-  secondary: 'bg-bg-raised border border-border',
+  primary: 'bg-transparent border border-transparent overflow-hidden',
+  secondary: 'bg-bg-elevated border border-border-strong',
   ghost: 'bg-transparent border border-transparent',
   danger: 'bg-danger border border-danger',
 };
 const labelStyles: Record<Variant, string> = {
-  primary: 'text-accent-contrast font-bold tracking-wide',
-  secondary: 'text-ink font-semibold tracking-wide',
-  ghost: 'text-ink-subtle font-medium',
-  danger: 'text-accent-contrast font-bold tracking-wide',
+  primary: 'text-accent-contrast font-display tracking-wide',
+  secondary: 'text-ink font-display tracking-wide',
+  ghost: 'text-ink-subtle font-semibold',
+  danger: 'text-accent-contrast font-display tracking-wide',
 };
 const iconColors: Record<Variant, string> = {
   primary: '#FFFFFF',
-  secondary: '#F4F4F5',
-  ghost: '#A1A1AA',
+  secondary: '#F4F4F7',
+  ghost: '#B4B4C2',
   danger: '#FFFFFF',
 };
 
@@ -81,6 +91,14 @@ export function Button({
       } ${fullWidth ? 'self-stretch' : 'self-start'}`}
       {...rest}
     >
+      {variant === 'primary' ? (
+        <LinearGradient
+          colors={FLAME}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+        />
+      ) : null}
       {loading ? (
         <ActivityIndicator color={iconColors[variant]} />
       ) : (

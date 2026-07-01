@@ -9,7 +9,9 @@ export type Feature =
   | 'ai_exercise_alts'
   | 'equipment_scan'
   | 'unlimited_workouts'
-  | 'progress_photos';
+  | 'progress_photos'
+  | 'readiness'
+  | 'pantry_scan';
 
 export interface Entitlement {
   feature: Feature;

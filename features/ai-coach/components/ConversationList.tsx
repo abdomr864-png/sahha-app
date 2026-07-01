@@ -90,7 +90,7 @@ export function ConversationList() {
       ListEmptyComponent={
         <View className="items-center mt-6">
           <View className="w-16 h-16 rounded-2xl bg-bg-raised border border-border items-center justify-center mb-4">
-            <Icon name="sparkles" size={26} color="#A1A1AA" />
+            <Icon name="sparkles" size={26} color="#B4B4C2" />
           </View>
           <Text className="text-ink-subtle text-base text-center px-6">
             {t(
@@ -183,7 +183,7 @@ function SnapshotCard({ snapshot }: { snapshot: CoachSnapshot | undefined }) {
 
       {snapshot?.recent_pr ? (
         <View className="flex-row items-center mt-4 bg-accent/10 rounded-2xl px-3 py-2.5">
-          <Icon name="medal" size={16} color="#FBBF24" />
+          <Icon name="medal" size={16} color="#F5C451" />
           <Text className="text-ink text-sm font-semibold ml-2" numberOfLines={1}>
             {t('ai.coach.recentPr', 'New PR:')} {snapshot.recent_pr.exercise}{' '}
             {snapshot.recent_pr.value}
@@ -218,7 +218,7 @@ function Stat({
 }) {
   return (
     <View className="flex-1 bg-bg-subtle border border-border rounded-2xl p-3">
-      <Icon name={icon} size={14} color={highlight ? '#F97316' : '#A1A1AA'} />
+      <Icon name={icon} size={14} color={highlight ? '#F97316' : '#B4B4C2'} />
       <Text className="text-ink text-xl font-bold mt-1.5">{value}</Text>
       <Text className="text-ink-subtle text-[11px]" numberOfLines={1}>
         {label}

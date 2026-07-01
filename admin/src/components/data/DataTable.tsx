@@ -481,7 +481,7 @@ function Cell({ field, value }: { field: FieldSpec; value: unknown }) {
       );
       if (isUserCol) {
         return (
-          <Link to={`/users/${str}`} onClick={(e) => e.stopPropagation()}>
+          <Link to={`/admin/users/${str}`} onClick={(e) => e.stopPropagation()}>
             {body}
           </Link>
         );

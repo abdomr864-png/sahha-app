@@ -22,7 +22,7 @@ export function IconButton({
       : variant === 'ghost'
         ? 'bg-transparent border-transparent'
         : 'bg-bg-raised border-border';
-  const color = variant === 'accent' ? '#FFFFFF' : '#F4F4F5';
+  const color = variant === 'accent' ? '#FFFFFF' : '#F4F4F7';
   return (
     <Pressable
       onPress={onPress}

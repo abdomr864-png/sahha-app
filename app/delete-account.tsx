@@ -68,14 +68,14 @@ export default function DeleteAccount() {
         <View
           className="w-20 h-20 rounded-3xl bg-danger/10 border border-danger/40 items-center justify-center mb-5"
           style={{
-            shadowColor: '#F87171',
+            shadowColor: '#FF4D6D',
             shadowOpacity: 0.4,
             shadowRadius: 18,
             shadowOffset: { width: 0, height: 8 },
             elevation: 8,
           }}
         >
-          <Icon name="trash" size={32} color="#F87171" strokeWidth={2} />
+          <Icon name="trash" size={32} color="#FF4D6D" strokeWidth={2} />
         </View>
         <Text className="text-ink text-2xl font-extrabold tracking-tight text-center">
           {t('deleteAccount.title')}
@@ -87,7 +87,7 @@ export default function DeleteAccount() {
 
       <Card tone="raised" className="mb-6 border border-danger/30">
         <View className="flex-row items-start">
-          <Icon name="shield" size={16} color="#F87171" />
+          <Icon name="shield" size={16} color="#FF4D6D" />
           <Text className="text-ink-subtle text-xs ml-2 flex-1 leading-5">
             {t('deleteAccount.permanentNote')}
           </Text>

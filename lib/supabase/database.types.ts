@@ -40,11 +40,66 @@ export interface Database {
         experience_level: ExperienceLevel | null;
         training_days_per_week: number | null;
         equipment_access: EquipmentAccess | null;
+        activity_level: string | null;
+        diet_preference: string | null;
+        goal_pace: string | null;
+        target_weight_kg: number | null;
         bio: string | null;
         is_public: boolean;
         injuries: string[] | null;
         created_at: string;
         updated_at: string;
+      }>;
+      foods: Row<{
+        id: string;
+        name: string;
+        brand: string | null;
+        calories: number;
+        protein_g: number;
+        carbs_g: number;
+        fat_g: number;
+        serving_size_g: number;
+        source: string | null;
+        barcode: string | null;
+        name_fr: string | null;
+        name_ar: string | null;
+        category: string | null;
+        aliases: string[] | null;
+        slug: string | null;
+      }>;
+      meals: Row<{
+        id: string;
+        user_id: string;
+        name: string | null;
+        meal_type: 'breakfast' | 'lunch' | 'dinner' | 'snack' | null;
+        eaten_at: string;
+        photo_url: string | null;
+        verdict: 'good' | 'ok' | 'bad' | null;
+        health_score: number | null;
+        ai_summary: string | null;
+      }>;
+      meal_items: Row<{
+        id: string;
+        meal_id: string;
+        food_id: string | null;
+        custom_name: string | null;
+        calories: number;
+        protein_g: number;
+        carbs_g: number;
+        fat_g: number;
+        quantity_g: number;
+      }>;
+      pantry_items: Row<{
+        id: string;
+        user_id: string;
+        food_db_id: string | null;
+        name: string;
+        quantity: number | null;
+        unit: string | null;
+        source: 'scan' | 'manual';
+        confidence: number | null;
+        added_at: string;
+        expires_at: string | null;
       }>;
       exercises: Row<{
         id: string;
@@ -263,6 +318,24 @@ export interface Database {
         permission_revoked: boolean;
         created_at: string;
         updated_at: string;
+      }>;
+      user_strength_estimates: Row<{
+        user_id: string;
+        lift_id: string;
+        exercise_id: string | null;
+        est_one_rm_kg: number;
+        best_weight_kg: number;
+        best_reps: number;
+        level: 'beginner' | 'novice' | 'intermediate' | 'advanced' | 'elite' | null;
+        bodyweight_ratio: number | null;
+        bodyweight_kg: number | null;
+        computed_at: string;
+      }>;
+      user_badges: Row<{
+        user_id: string;
+        badge_id: string;
+        earned_at: string;
+        meta: Json | null;
       }>;
     };
     Views: Record<string, never>;

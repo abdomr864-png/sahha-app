@@ -703,6 +703,34 @@ export const resources: ResourceSpec[] = [
       { name: 'description', type: 'longtext' },
     ],
   },
+  {
+    slug: 'plans',
+    title: 'Plans',
+    primaryKey: 'id',
+    defaultOrder: 'sort_order',
+    searchColumns: ['id', 'name'],
+    fields: [
+      { name: 'id', type: 'text', required: true },
+      { name: 'name', type: 'text', required: true },
+      { name: 'description', type: 'text', listHidden: true },
+      { name: 'price', type: 'number', required: true },
+      { name: 'currency', type: 'text' },
+      { name: 'billing_interval', type: 'enum', options: ['month', 'year', 'one_time'] },
+      {
+        name: 'sub_plan',
+        type: 'enum',
+        options: ['free', 'premium_monthly', 'premium_yearly'],
+      },
+      { name: 'features', type: 'json', listHidden: true },
+      { name: 'feature_limits', type: 'json', listHidden: true },
+      { name: 'badge', type: 'text' },
+      { name: 'highlight', type: 'boolean' },
+      { name: 'is_active', type: 'boolean' },
+      { name: 'sort_order', type: 'number' },
+      createdAt(),
+      updatedAt(),
+    ],
+  },
 ];
 
 export function getResource(slug: string): ResourceSpec | undefined {

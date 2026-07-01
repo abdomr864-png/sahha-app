@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Pressable, Text, TextInput, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useTranslation } from 'react-i18next';
-import { Button, Header, Screen, Spinner } from '@features/shared';
-import { useEntitlement } from '@features/premium';
+import { AnalyzingScope, Button, Header, Screen } from '@features/shared';
+import { useEntitlement, UpgradeCallout } from '@features/premium';
 import type { GenerateWorkoutRequest } from '@lib/llm';
 import { useGenerateWorkout } from '../hooks/useGenerateWorkout';
 
@@ -57,16 +57,14 @@ export function GenerateWorkoutIntakeScreen() {
       <Header title={t('routines.workoutTitle', "Today's workout")} showBack />
 
       {isBlocked ? (
-        <View className="bg-bg-raised border border-border rounded-2xl p-4 mb-4">
-          <Text className="text-ink font-bold mb-1">
-            {t('premium.required', 'Premium required')}
-          </Text>
-          <Text className="text-ink-subtle text-sm">
-            {ent.data?.reason === 'premium_only'
+        <UpgradeCallout
+          reason={ent.data?.reason}
+          hint={
+            ent.data?.reason === 'premium_only'
               ? t('premium.premiumOnly', 'This is a premium feature')
-              : t('routines.dailyLimit', 'You can generate 3 workouts/day on the free plan.')}
-          </Text>
-        </View>
+              : t('routines.dailyLimit', 'You can generate 3 workouts/day on the free plan.')
+          }
+        />
       ) : null}
 
       <Section title={t('routines.focus', 'What do you want to focus on?')}>
@@ -81,7 +79,7 @@ export function GenerateWorkoutIntakeScreen() {
               value={customFocus}
               onChangeText={setCustomFocus}
               placeholder={t('routines.customPlaceholder', 'e.g. shoulders + abs')}
-              placeholderTextColor="#A1A1AA"
+              placeholderTextColor="#B4B4C2"
               className="text-ink text-base"
             />
           </View>
@@ -176,17 +174,16 @@ function ChipGrid({
 
 function LoadingMask() {
   const { t } = useTranslation();
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    const id = setInterval(() => setI((x) => (x + 1) % LOADING_MESSAGE_KEYS.length), 1500);
-    return () => clearInterval(id);
-  }, []);
   return (
-    <Screen>
-      <View className="flex-1 items-center justify-center">
-        <Spinner />
-        <Text className="text-ink mt-6 text-base">{t(LOADING_MESSAGE_KEYS[i]!)}</Text>
-      </View>
+    <Screen padded={false}>
+      <AnalyzingScope
+        icon="dumbbell"
+        stages={LOADING_MESSAGE_KEYS.map((k) => t(k))}
+        sublabel={t('routines.analyzeSub', 'AI COACH · BUILDING YOUR SESSION')}
+        footLabel={t('routines.analyzeFoot', 'BUILDING')}
+        stageIntervalMs={1500}
+        durationMs={7000}
+      />
     </Screen>
   );
 }

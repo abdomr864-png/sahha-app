@@ -18,7 +18,7 @@ export function Chip({ label, active, onPress, icon, size = 'md' }: Props) {
         active ? 'bg-accent border-accent' : 'bg-bg-raised border-border'
       }`}
     >
-      {icon ? <Icon name={icon} size={14} color={active ? '#FFFFFF' : '#A1A1AA'} /> : null}
+      {icon ? <Icon name={icon} size={14} color={active ? '#FFFFFF' : '#B4B4C2'} /> : null}
       <Text
         className={`${size === 'sm' ? 'text-xs' : 'text-sm'} font-semibold ${
           active ? 'text-accent-contrast' : 'text-ink-subtle'

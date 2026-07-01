@@ -9,7 +9,7 @@ import ResourceHero from '@/components/layout/ResourceHero';
 export default function ResourcePage() {
   const { slug = '' } = useParams<{ slug: string }>();
   const resource = getResource(slug);
-  if (!resource) return <Navigate to="/" replace />;
+  if (!resource) return <Navigate to="/admin" replace />;
   const visual = getResourceVisual(slug);
 
   return (
@@ -22,9 +22,13 @@ export default function ResourcePage() {
         table={resource.table ?? resource.slug}
         readOnly={resource.readOnly}
       />
-      <Insights slug={slug} />
-      <ResourceStats resource={resource} />
-      <DataTable resource={resource} />
+      {/* key on slug: remount these when the resource changes so DataTable's
+          internal sort/filter/search/page state never leaks across resources
+          (a stale sort column like exercises' `name_en` would otherwise be
+          re-applied to the next table and throw "column … does not exist"). */}
+      <Insights key={`ins-${slug}`} slug={slug} />
+      <ResourceStats key={`stats-${slug}`} resource={resource} />
+      <DataTable key={`table-${slug}`} resource={resource} />
     </div>
   );
 }

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocalSearchParams } from 'expo-router';
 import { Text, View } from 'react-native';
-import { Button, Header, Screen, Spinner } from '@features/shared';
-import { useEntitlement } from '@features/premium';
+import { AnalyzingScope, Button, Header, Screen } from '@features/shared';
+import { useEntitlement, UpgradeCallout } from '@features/premium';
 import { aiClient } from '@lib/llm';
 import { AIError } from '@lib/llm/client';
 import type { FormFeedback } from '@lib/llm';
@@ -55,11 +55,18 @@ export function FormCheckScreen() {
 
   if (analyzing) {
     return (
-      <Screen>
-        <View className="flex-1 items-center justify-center">
-          <Spinner />
-          <Text className="text-ink mt-6">{t('ai.formCheck.analyzing', 'Analyzing form…')}</Text>
-        </View>
+      <Screen padded={false}>
+        <AnalyzingScope
+          icon="play"
+          stages={[
+            t('ai.formCheck.analyzeStages.extract', 'Extracting key frames…'),
+            t('ai.formCheck.analyzeStages.joints', 'Tracking your joints…'),
+            t('ai.formCheck.analyzeStages.angles', 'Measuring joint angles…'),
+            t('ai.formCheck.analyzeStages.scoring', 'Scoring your form…'),
+          ]}
+          sublabel={t('ai.formCheck.analyzeSub', 'AI VISION · ANALYZING YOUR REPS')}
+          footLabel={t('ai.formCheck.analyzeFoot', 'ANALYZING')}
+        />
       </Screen>
     );
   }
@@ -69,16 +76,10 @@ export function FormCheckScreen() {
       <Header title={t('ai.formCheck.title', 'Form check')} showBack />
 
       {isBlocked ? (
-        <View className="bg-bg-raised border border-border rounded-2xl p-4 mb-4">
-          <Text className="text-ink font-semibold mb-1">
-            {ent.data?.reason === 'premium_only'
-              ? t('premium.required', 'Premium required')
-              : t('ai.formCheck.weeklyLimit', 'Weekly limit reached')}
-          </Text>
-          <Text className="text-ink-subtle text-sm">
-            {t('ai.formCheck.upgradeHint', 'Upgrade to get unlimited form checks.')}
-          </Text>
-        </View>
+        <UpgradeCallout
+          reason={ent.data?.reason}
+          hint={t('ai.formCheck.upgradeHint', 'Upgrade to get unlimited form checks.')}
+        />
       ) : (
         <View className="bg-bg-raised border border-border rounded-2xl p-4 mb-4">
           <Text className="text-ink font-semibold mb-2">
@@ -118,7 +119,7 @@ export function FormCheckScreen() {
 function FeedbackView({ feedback }: { feedback: FormFeedback }) {
   const { t } = useTranslation();
   const score = feedback.overall_score;
-  const scoreColor = score >= 8 ? '#34D399' : score >= 5 ? '#FBBF24' : '#F87171';
+  const scoreColor = score >= 8 ? '#2EE6A6' : score >= 5 ? '#F5C451' : '#FF4D6D';
   return (
     <View className="mt-6">
       <View className="bg-bg-raised border border-border rounded-2xl p-4 mb-3">

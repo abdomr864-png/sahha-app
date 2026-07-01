@@ -55,7 +55,7 @@ export type InsightSpec =
     };
 
 const accentBar: Record<Accent, string> = {
-  emerald: 'bg-emerald-400',
+  emerald: 'bg-orange-400',
   blue: 'bg-blue-400',
   violet: 'bg-violet-400',
   amber: 'bg-amber-400',

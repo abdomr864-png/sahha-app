@@ -102,7 +102,7 @@ export default function UserDetail() {
   return (
     <div className="space-y-6 p-8">
       <Link
-        to="/users"
+        to="/admin/users"
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft size={12} /> All users
@@ -277,7 +277,17 @@ export default function UserDetail() {
             );
           })}
         </div>
-        {active && <DataTable resource={active} prefilter={{ user_id: id }} pageSize={25} />}
+        {active && (
+          // key on slug so switching tabs remounts the table and resets its
+          // sort/filter state — otherwise a previous tab's sort column gets
+          // re-applied to the new table and throws "column … does not exist".
+          <DataTable
+            key={active.slug}
+            resource={active}
+            prefilter={{ user_id: id }}
+            pageSize={25}
+          />
+        )}
       </div>
 
       <div className="text-[11px] text-muted-foreground">

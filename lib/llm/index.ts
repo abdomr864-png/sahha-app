@@ -22,6 +22,15 @@ export type {
   WorkoutExercise,
   ExerciseAlternativesRequest,
   ExerciseAlternativesResponse,
+  PantryScanRequest,
+  PantryScanResponse,
+  PantryScanItem,
+  PantryUnit,
+  MealSuggestionsRequest,
+  MealSuggestionsResponse,
+  MealSuggestion,
+  SuggestionItem,
+  MacroSetDTO,
 } from './types';
 
 export {
@@ -40,6 +49,10 @@ export {
   GeneratedWorkoutSchema,
   ExerciseAlternativesRequestSchema,
   ExerciseAlternativesResponseSchema,
+  PantryScanRequestSchema,
+  PantryScanResponseSchema,
+  MealSuggestionsRequestSchema,
+  MealSuggestionsResponseSchema,
 } from './types';
 
 export { aiClient, AIError } from './client';

@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 import { Modal, Pressable, ScrollView, Text, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { ExerciseAnimation } from './ExerciseAnimation';
@@ -29,7 +28,7 @@ export function ExerciseDetailSheet({
   accentColor = '#F97316',
 }: Props) {
   const { t } = useTranslation();
-  const images = exercise ? exerciseImages(exercise.name) : [];
+  const images = exercise ? exerciseImages(exercise.name, exercise.muscle_group) : [];
   const info = exercise ? exerciseInfo(exercise.name) : null;
 
   if (!exercise) return null;
@@ -60,11 +59,11 @@ export function ExerciseDetailSheet({
             right: 0,
             bottom: 0,
             maxHeight: '92%',
-            backgroundColor: '#0B0B0F',
+            backgroundColor: '#0A0A0F',
             borderTopLeftRadius: 28,
             borderTopRightRadius: 28,
             borderTopWidth: 1,
-            borderColor: '#27272F',
+            borderColor: '#21212B',
             overflow: 'hidden',
           }}
         >
@@ -89,7 +88,7 @@ export function ExerciseDetailSheet({
                 width: 36,
                 height: 4,
                 borderRadius: 2,
-                backgroundColor: '#3F3F46',
+                backgroundColor: '#34343F',
               }}
             />
           </View>
@@ -274,7 +273,7 @@ export function ExerciseDetailSheet({
                         style={{
                           backgroundColor: 'rgba(255,255,255,0.04)',
                           borderWidth: 1,
-                          borderColor: '#27272F',
+                          borderColor: '#21212B',
                         }}
                       >
                         <Text
@@ -338,11 +337,11 @@ function MetaPill({ icon, label }: { icon: IconName; label: string }) {
         paddingVertical: 4,
         backgroundColor: 'rgba(255,255,255,0.04)',
         borderWidth: 1,
-        borderColor: '#27272F',
+        borderColor: '#21212B',
         gap: 5,
       }}
     >
-      <Icon name={icon} size={11} color="#A1A1AA" />
+      <Icon name={icon} size={11} color="#B4B4C2" />
       <Text
         className="text-ink-muted text-[11px] font-bold capitalize"
         style={{ letterSpacing: 0.3 }}
@@ -362,14 +361,14 @@ function SpecCard({ label, value, accent }: { label: string; value: string; acce
         paddingHorizontal: 12,
         backgroundColor: accent ? `${accent}10` : '#17171B',
         borderWidth: 1,
-        borderColor: accent ? `${accent}30` : '#27272F',
+        borderColor: accent ? `${accent}30` : '#21212B',
       }}
     >
       <Text
         className="text-[9px] font-extrabold uppercase mb-1"
         style={{
           letterSpacing: 1,
-          color: accent ?? '#A1A1AA',
+          color: accent ?? '#B4B4C2',
         }}
       >
         {label}
@@ -378,7 +377,7 @@ function SpecCard({ label, value, accent }: { label: string; value: string; acce
         className="font-extrabold tracking-tight"
         style={{
           fontSize: 16,
-          color: accent ?? '#F4F4F5',
+          color: accent ?? '#F4F4F7',
         }}
       >
         {value}

@@ -16,7 +16,7 @@ export function Input({ label, error, icon, password, trailing, ...rest }: Props
   const [visible, setVisible] = useState(false);
 
   const borderClass = error ? 'border-danger' : focused ? 'border-accent' : 'border-border';
-  const iconColor = error ? '#F87171' : focused ? '#FF4D2E' : '#A1A1AA';
+  const iconColor = error ? '#FF4D6D' : focused ? '#FF4D2E' : '#B4B4C2';
 
   return (
     <View className="mb-4">
@@ -61,7 +61,7 @@ export function Input({ label, error, icon, password, trailing, ...rest }: Props
             className="ml-2 p-1"
             accessibilityRole="button"
           >
-            <Icon name={visible ? 'eye' : 'eye-off'} size={18} color="#A1A1AA" />
+            <Icon name={visible ? 'eye' : 'eye-off'} size={18} color="#B4B4C2" />
           </Pressable>
         ) : null}
       </View>

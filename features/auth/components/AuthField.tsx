@@ -12,7 +12,7 @@ interface Props extends Omit<TextInputProps, 'secureTextEntry'> {
   password?: boolean;
 }
 
-const ICON_COLOR_IDLE = '#A1A1AA';
+const ICON_COLOR_IDLE = '#B4B4C2';
 const ICON_COLOR_ACTIVE = '#FF4D2E';
 
 function FieldIcon({ name, color }: { name: IconName; color: string }) {
@@ -58,7 +58,7 @@ export function AuthField({ label, error, icon, password, ...rest }: Props) {
 
   const borderClass = error ? 'border-danger' : focused ? 'border-accent' : 'border-border';
 
-  const iconColor = error ? '#F87171' : focused ? ICON_COLOR_ACTIVE : ICON_COLOR_IDLE;
+  const iconColor = error ? '#FF4D6D' : focused ? ICON_COLOR_ACTIVE : ICON_COLOR_IDLE;
 
   return (
     <View className="mb-4">

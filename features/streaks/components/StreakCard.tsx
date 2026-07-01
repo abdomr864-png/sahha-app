@@ -58,7 +58,7 @@ export function StreakCard() {
             </Text>
           </View>
         </View>
-        <Icon name="chevron-right" size={16} color="#A1A1AA" />
+        <Icon name="chevron-right" size={16} color="#B4B4C2" />
       </View>
 
       <View className="mt-3">

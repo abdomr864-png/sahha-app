@@ -17,7 +17,7 @@ export function StepDots({ total, current }: Props) {
             style={{
               height: 4,
               borderRadius: 4,
-              backgroundColor: done ? '#FF4D2E' : active ? '#FF4D2E' : '#27272F',
+              backgroundColor: done ? '#FF4D2E' : active ? '#FF4D2E' : '#21212B',
               flex: active ? 2 : 1,
             }}
           />

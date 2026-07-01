@@ -30,9 +30,9 @@ const TYPE_COLOR: Record<StreakEventType, string> = {
   freeze_used: '#FACC15',
   recovery_week: '#FB923C',
   missed: '#EF4444',
-  rest_day: '#27272F',
-  week_completed: '#27272F',
-  reset: '#27272F',
+  rest_day: '#21212B',
+  week_completed: '#21212B',
+  reset: '#21212B',
 };
 
 interface DayBucket {

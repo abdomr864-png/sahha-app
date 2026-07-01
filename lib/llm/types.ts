@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 // Shared LLM types + Zod schemas. Imported by both the RN client and Deno
 // Edge Functions. Pure data — no runtime dependencies beyond zod.
 
@@ -107,6 +106,128 @@ export const MealParseRequestSchema = z
   .refine((v) => !!v.text?.trim() || !!v.image_url, {
     message: 'text or image_url required',
   });
+
+// ---- "What can I eat?" — pantry scan + macro-aware meal suggestions ----
+// Shared by the RN client and the pantry-scan / meal-suggestions edge functions.
+// CONTRACT: the model proposes dishes + portions only. Every macro number is
+// computed server-side from the food DB (lib/nutrition/macros.ts), never by the
+// model. Vision detections are mapped to food_db_id in CODE, never by the model.
+
+export const PantryUnitSchema = z.enum([
+  'g',
+  'ml',
+  'piece',
+  'cup',
+  'tbsp',
+  'tsp',
+  'handful',
+  'slice',
+  'can',
+  'unknown',
+]);
+export type PantryUnit = z.infer<typeof PantryUnitSchema>;
+
+// Model-only vision output: detected ingredients. No food_db_id — the edge
+// function resolves each name to a DB row in code (or leaves it unmatched).
+export const PantryVisionItemSchema = z.object({
+  name: z.string().min(1).max(80),
+  quantity: z.number().nonnegative().optional(),
+  unit: PantryUnitSchema.optional(),
+  confidence: z.number().min(0).max(1),
+});
+export const PantryVisionOutputSchema = z.object({
+  items: z.array(PantryVisionItemSchema).max(40),
+  no_food_detected: z.boolean().optional(),
+});
+export type PantryVisionOutput = z.infer<typeof PantryVisionOutputSchema>;
+
+// Client-facing request/response.
+export const PantryScanRequestSchema = z.object({
+  image_urls: z.array(z.string().url()).min(1).max(4),
+  locale: LocaleSchema,
+});
+export type PantryScanRequest = z.infer<typeof PantryScanRequestSchema>;
+
+export const PantryScanItemSchema = z.object({
+  // Display name (kept even when unmatched so the confirm UI can show it).
+  name: z.string(),
+  // Mapped food-DB row, or null when nothing matched ("search to add").
+  food_db_id: z.string().uuid().nullable(),
+  quantity: z.number().nonnegative().nullable(),
+  unit: z.string().nullable(),
+  confidence: z.number().min(0).max(1),
+});
+export type PantryScanItem = z.infer<typeof PantryScanItemSchema>;
+
+export const PantryScanResponseSchema = z.object({
+  items: z.array(PantryScanItemSchema),
+});
+export type PantryScanResponse = z.infer<typeof PantryScanResponseSchema>;
+
+export const MacroSetSchema = z.object({
+  kcal: z.number().nonnegative(),
+  protein: z.number().nonnegative(),
+  carbs: z.number().nonnegative(),
+  fat: z.number().nonnegative(),
+});
+export type MacroSetDTO = z.infer<typeof MacroSetSchema>;
+
+export const MealSuggestionsRequestSchema = z.object({
+  confirmed_food_db_ids: z.array(z.string().uuid()).min(1).max(40),
+  remaining_macros: MacroSetSchema,
+  locale: LocaleSchema,
+  ramadan_mode: z.boolean().optional(),
+  dietary_prefs: z.array(z.string().max(40)).max(10).optional(),
+});
+export type MealSuggestionsRequest = z.infer<typeof MealSuggestionsRequestSchema>;
+
+// Model-only output: dishes referencing food_db_ids + gram portions. We
+// deliberately exclude ANY macro field so a hallucinated number can't leak.
+export const SuggestionDraftItemSchema = z.object({
+  food_db_id: z.string().uuid(),
+  quantity_g: z.number().positive().max(2000),
+});
+export const SuggestionDraftSchema = z.object({
+  title: z.string().min(1).max(80),
+  items: z.array(SuggestionDraftItemSchema).min(1).max(12),
+  note: z.string().max(240).optional(),
+});
+export const SuggestionDraftListSchema = z.object({
+  suggestions: z.array(SuggestionDraftSchema).max(6),
+});
+export type SuggestionDraftList = z.infer<typeof SuggestionDraftListSchema>;
+
+// Enriched, server-computed, client-facing.
+export const SuggestionItemSchema = z.object({
+  food_db_id: z.string().uuid(),
+  name: z.string(),
+  quantity_g: z.number(),
+  macros: MacroSetSchema,
+});
+export type SuggestionItem = z.infer<typeof SuggestionItemSchema>;
+
+export const MacroKeySchema = z.enum(['protein', 'carbs', 'fat', 'kcal']);
+export const MealSuggestionSchema = z.object({
+  title: z.string(),
+  note: z.string().optional(),
+  items: z.array(SuggestionItemSchema),
+  // Code-computed sum of the items' macros.
+  macros: MacroSetSchema,
+  // Deterministic 0..100 fit to the remaining gap (ranking key).
+  fit_score: z.number(),
+  // 0..100 of remaining protein this suggestion covers (headline).
+  protein_fill_pct: z.number(),
+  // Macro still most under-delivered, for the "add a carb source" note.
+  shortfall: MacroKeySchema.nullable().optional(),
+});
+export type MealSuggestion = z.infer<typeof MealSuggestionSchema>;
+
+export const MealSuggestionsResponseSchema = z.object({
+  suggestions: z.array(MealSuggestionSchema),
+  // True when even the best suggestion is a weak fit (graceful no-match state).
+  best_is_weak: z.boolean(),
+});
+export type MealSuggestionsResponse = z.infer<typeof MealSuggestionsResponseSchema>;
 
 // ---- Program generation ----
 export const ProgramExerciseSchema = z.object({

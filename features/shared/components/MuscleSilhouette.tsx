@@ -79,16 +79,16 @@ export function MuscleSilhouette({ primary, secondary = [], size = 160, showBack
         data={data}
         side="front"
         scale={scale}
-        colors={['#FF7A4D', '#FF4D2E']}
-        border="#27272F"
+        colors={['#FF8A2B', '#FF4D2E']}
+        border="#21212B"
       />
       {showBack ? (
         <Body
           data={data}
           side="back"
           scale={scale}
-          colors={['#FF7A4D', '#FF4D2E']}
-          border="#27272F"
+          colors={['#FF8A2B', '#FF4D2E']}
+          border="#21212B"
         />
       ) : null}
     </View>

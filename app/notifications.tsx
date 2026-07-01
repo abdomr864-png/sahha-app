@@ -343,7 +343,7 @@ export default function NotificationsSettings() {
               <Icon
                 name="bell"
                 size={18}
-                color={granted ? '#34D399' : denied ? '#F87171' : '#FBBF24'}
+                color={granted ? '#2EE6A6' : denied ? '#FF4D6D' : '#F5C451'}
               />
             </View>
             <View className="flex-1">
@@ -381,7 +381,7 @@ export default function NotificationsSettings() {
         {GROUPS.map((group) => (
           <View key={group.title} className="mb-5">
             <View className="flex-row items-center mb-2 px-1">
-              <Icon name={group.icon} size={12} color="#A1A1AA" />
+              <Icon name={group.icon} size={12} color="#B4B4C2" />
               <Text className="text-ink-muted text-[10px] font-bold uppercase tracking-widest ml-1.5">
                 {t(`profile.notifications.groups.${group.title}`)}
               </Text>
@@ -406,7 +406,7 @@ export default function NotificationsSettings() {
                     value={prefs[row]}
                     disabled={unavailable || busy}
                     onValueChange={(on) => void toggle(row, on)}
-                    trackColor={{ true: '#FF4D2E', false: '#3F3F46' }}
+                    trackColor={{ true: '#FF4D2E', false: '#34343F' }}
                     thumbColor="#FFFFFF"
                   />
                 </View>

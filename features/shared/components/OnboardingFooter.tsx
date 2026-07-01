@@ -43,7 +43,7 @@ export function OnboardingFooter({ label, onPress, disabled, loading }: Props) {
         style={[animStyle, { borderRadius: 18, overflow: 'hidden' }]}
       >
         <LinearGradient
-          colors={isDisabled ? ['#3F3F46', '#27272F'] : ['#FF6E4F', '#FF4D2E']}
+          colors={isDisabled ? ['#34343F', '#21212B'] : ['#FF6E4F', '#FF4D2E']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{

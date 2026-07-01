@@ -38,6 +38,19 @@ const MEMORY_REFRESH_AT_MESSAGES = 30;
 const MEMORY_REFRESH_EVERY = 20;
 
 Deno.serve(async (req: Request) => {
+  try {
+    return await handleChat(req);
+  } catch (e) {
+    // Top-level safety net: any uncaught error (missing OPENAI_API_KEY,
+    // import/runtime issue, etc.) used to surface as an opaque 500 without a
+    // body. Now we return the actual message so the client can show it.
+    const msg = (e as Error)?.message ?? String(e);
+    console.error('[ai-chat] uncaught:', msg);
+    return json(500, { error: 'provider_error', detail: msg.slice(0, 400) });
+  }
+});
+
+async function handleChat(req: Request): Promise<Response> {
   const pre = preflight(req);
   if (pre) return pre;
   if (req.method !== 'POST') return json(405, { error: 'invalid_request' });
@@ -50,8 +63,8 @@ Deno.serve(async (req: Request) => {
   try {
     const body = await req.json();
     parsed = ChatRequestSchema.parse(body);
-  } catch {
-    return json(400, { error: 'invalid_request' });
+  } catch (e) {
+    return json(400, { error: 'invalid_request', detail: (e as Error)?.message?.slice(0, 200) });
   }
 
   if (await isOverHardCap(admin, userId)) return json(429, { error: 'quota_exceeded' });
@@ -84,7 +97,12 @@ Deno.serve(async (req: Request) => {
       .insert({ user_id: userId, title: parsed.message.slice(0, 80) })
       .select('id')
       .single();
-    if (error || !created) return json(500, { error: 'provider_error' });
+    if (error || !created) {
+      return json(500, {
+        error: 'provider_error',
+        detail: `conversation_insert: ${error?.message ?? 'unknown'}`,
+      });
+    }
     conversationId = (created as { id: string }).id;
   }
 
@@ -210,9 +228,12 @@ Deno.serve(async (req: Request) => {
           }).catch(() => {});
         }
       } catch (e) {
-        const code = (e as Error).message?.includes('rate_limit')
-          ? 'rate_limited'
-          : 'provider_error';
+        const errMsg = (e as Error).message ?? String(e);
+        const code = errMsg?.includes('rate_limit') ? 'rate_limited' : 'provider_error';
+        // Surface the underlying message to logs AND to the SSE client so the
+        // app can show "no credits" / "invalid api key" / etc. instead of a
+        // generic "having trouble" banner.
+        console.error('[ai-chat] stream error:', errMsg);
         await logAICall(admin, {
           userId,
           feature: FEATURE,
@@ -222,7 +243,7 @@ Deno.serve(async (req: Request) => {
           status: 'error',
           errorCode: code,
         }).catch(() => {});
-        send({ type: 'error', code });
+        send({ type: 'error', code, detail: errMsg.slice(0, 400) });
         controller.enqueue(encoder.encode('data: [DONE]\n\n'));
       } finally {
         controller.close();
@@ -238,7 +259,7 @@ Deno.serve(async (req: Request) => {
       'x-accel-buffering': 'no',
     },
   });
-});
+}
 
 async function fetchIsMinor(admin: any, userId: string): Promise<boolean> {
   const { data } = await admin.from('profiles').select('dob').eq('user_id', userId).maybeSingle();

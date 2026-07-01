@@ -3,19 +3,28 @@
 // gpt-4o has the vision capability we need for form-check.
 
 export const MODELS = {
-  // Coach chat upgraded from -mini to gpt-4o for richer, more grounded advice
-  // off the user's real training/recovery context. Token caps + per-user daily
-  // limits keep the cost bounded.
-  chat: 'gpt-4o',
+  // Using -mini for chat: matches the model the other AI features use
+  // (program-gen, meal-parse, etc.), which avoids a class of "no access to
+  // gpt-4o" failures on accounts that haven't been granted that model.
+  chat: 'gpt-4o-mini',
   programGen: 'gpt-4o-mini',
   programAdjust: 'gpt-4o-mini',
   mealParse: 'gpt-4o-mini',
+  // Photo meal analysis. gpt-4o-mini is multimodal and reads food photos well
+  // enough for macro estimation, costs ~20x less than gpt-4o, and avoids the
+  // "no access to gpt-4o" failures that were silently rejecting real meals.
+  mealVision: 'gpt-4o-mini',
   formCheck: 'gpt-4o',
   // Vision is needed for equipment ID; -mini's visual reasoning on uncommon
   // equipment isn't reliable enough. Cost-bounded by the per-feature daily limit.
   equipmentScan: 'gpt-4o',
   workoutGen: 'gpt-4o-mini',
   exerciseAlts: 'gpt-4o-mini',
+  // "What can I eat?" — pantry ingredient detection (vision) and the chef that
+  // proposes dishes from confirmed ingredients. -mini is multimodal, cheap, and
+  // reads pantry/fridge photos well enough; macros are computed in code anyway.
+  pantryScan: 'gpt-4o-mini',
+  mealSuggest: 'gpt-4o-mini',
 } as const;
 
 export type ModelKey = keyof typeof MODELS;

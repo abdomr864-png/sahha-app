@@ -1,4 +1,3 @@
-/* eslint-disable max-lines -- Icon registry: each icon adds ~10 lines; splitting fragments the API. */
 import Svg, { Path, Circle, Rect } from 'react-native-svg';
 
 export type IconName =
@@ -29,6 +28,11 @@ export type IconName =
   | 'bar-chart'
   | 'users'
   | 'play'
+  | 'pause'
+  | 'skip-forward'
+  | 'skip-back'
+  | 'music'
+  | 'spotify'
   | 'history'
   | 'list'
   | 'edit'
@@ -66,7 +70,7 @@ interface Props {
 export function Icon({
   name,
   size = 20,
-  color = '#F4F4F5',
+  color = '#F4F4F7',
   strokeWidth = 1.8,
   filled = false,
 }: Props) {
@@ -246,6 +250,78 @@ function paths(
           strokeLinejoin="round"
           fill={c}
         />
+      );
+    case 'pause':
+      return (
+        <>
+          <Rect
+            x="6"
+            y="5"
+            width="4"
+            height="14"
+            rx="1"
+            stroke={c}
+            strokeWidth={p.strokeWidth}
+            fill={c}
+          />
+          <Rect
+            x="14"
+            y="5"
+            width="4"
+            height="14"
+            rx="1"
+            stroke={c}
+            strokeWidth={p.strokeWidth}
+            fill={c}
+          />
+        </>
+      );
+    case 'skip-forward':
+      return (
+        <>
+          <Path
+            d="M5 5l10 7-10 7V5Z"
+            stroke={c}
+            strokeWidth={p.strokeWidth}
+            strokeLinejoin="round"
+            fill={c}
+          />
+          <Path d="M19 5v14" {...p} />
+        </>
+      );
+    case 'skip-back':
+      return (
+        <>
+          <Path
+            d="M19 5L9 12l10 7V5Z"
+            stroke={c}
+            strokeWidth={p.strokeWidth}
+            strokeLinejoin="round"
+            fill={c}
+          />
+          <Path d="M5 5v14" {...p} />
+        </>
+      );
+    case 'music':
+      return (
+        <>
+          <Path d="M9 18V5l12-2v13" {...p} />
+          <Circle cx="6" cy="18" r="3" {...p} />
+          <Circle cx="18" cy="16" r="3" {...p} />
+        </>
+      );
+    case 'spotify':
+      return (
+        <>
+          <Circle cx="12" cy="12" r="10" {...p} />
+          <Path
+            d="M7 14.4c2.6-.9 6.4-.9 9 .6M7.4 11c3.1-1 7.2-.8 10 1M8 7.6c3.6-1 7.8-.4 10.6 1.5"
+            stroke={c}
+            strokeWidth={p.strokeWidth}
+            strokeLinecap="round"
+            fill="none"
+          />
+        </>
       );
     case 'history':
       return (
